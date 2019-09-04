@@ -18,10 +18,11 @@
         <scalatest.version>2.2.4</scalatest.version>
         <javax.servlet.api.version>3.1.0</javax.servlet.api.version>
         <json4s-jackson.version>3.2.9</json4s-jackson.version>
-        <jetty.version>9.2.4.v20141103</jetty.version>
+        <jetty.version>9.2.14.v20151106</jetty.version>
         <logback.version>1.1.3</logback.version>
         <slf4j.version>1.7.2</slf4j.version>
         <fastjson.version>1.2.46</fastjson.version>
+        <servlet.version>3.1.0</servlet.version>
 
         <!--TEST-->
         <scalatra.version>2.3.0</scalatra.version>
@@ -31,12 +32,12 @@
         <dependency>
             <groupId>org.eclipse.jetty.aggregate</groupId>
             <artifactId>jetty-all</artifactId>
-            <version>9.2.14.v20151106</version>
+            <version>${jetty.version}</version>
         </dependency>
         <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>javax.servlet-api</artifactId>
-            <version>3.1.0</version>
+            <version>${servlet.version}</version>
         </dependency>
     </dependencies>
 

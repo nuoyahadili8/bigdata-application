@@ -33,6 +33,14 @@ trait TimeFuncs extends Serializable {
     return date
   }
 
+  def setDateFormat(format: String): SimpleDateFormat = {
+    new SimpleDateFormat(format)
+  }
+
+  def getCurrentDate(format: String): String = {
+    setDateFormat(format).format(toDate)
+  }
+
   def getCurrentTimeMillis: Long = System.currentTimeMillis()
 
   def timeMillsToDate(timeMills: Long, format: String = "yyyy-MM-dd"): String = {
@@ -89,4 +97,28 @@ trait TimeFuncs extends Serializable {
       (currentDate, currentHour, currentMinute.head + "5")
     }
   }
+
+  def getTimeByHour(givenDate:String,hour: String): Date = {
+    var newHour = "00"
+    if (hour.matches("(?m)[0-9]{1}")) newHour = "0" + hour
+    else if (hour.matches("(?m)[0-9]{2}")) newHour = hour
+    strToDate(givenDate + newHour + "0000", "yyyyMMddHHmmss")
+  }
+
+  def getCurrentTimeByHour(hour: String): Date = {
+    var newHour = "00"
+    if (hour.matches("(?m)[0-9]{1}")) newHour = "0" + hour
+    else if (hour.matches("(?m)[0-9]{2}")) newHour = hour
+    strToDate(getCurrentDate("yyyyMMdd") + newHour + "0000", "yyyyMMddHHmmss")
+  }
+
+  def getIopSalesTimeFlag: Boolean = {
+    val currentTimestamp = getCurrentTimeMillis
+    val currTime = toDate(currentTimestamp)
+    val currentDate = timeMillsToDate(currentTimestamp, "yyyy-MM-dd")
+    val currentDate8oclock = strToDate(currentDate + " 08:00:00", format = "yyyy-MM-dd HH:mm:ss")
+    val currentDate18oclock = strToDate(currentDate + " 18:00:00", format = "yyyy-MM-dd HH:mm:ss")
+    if (currTime.after(currentDate8oclock) && currTime.before(currentDate18oclock)) true else false
+  }
+
 }

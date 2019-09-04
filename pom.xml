@@ -17,6 +17,7 @@
         <module>tour-application</module>
         <module>carefree-application</module>
         <module>user-stay-duration</module>
+        <module>iop-streaming</module>
     </modules>
     <properties>
         <scala.version>2.11.8</scala.version>

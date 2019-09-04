@@ -2,6 +2,7 @@ package com.teradata.bigdata.util.hbase
 
 import java.util
 
+import com.teradata.bigdata.util.tools.TimeFuncs
 import org.apache.hadoop.conf.Configuration
 import org.apache.hadoop.hbase.client._
 import org.apache.hadoop.hbase.util.Bytes
@@ -20,7 +21,7 @@ import scala.collection.{Map, mutable}
   * @Copyright ©2018-2019 al.github
   * @Modified By:
   */
-class HbaseUtil extends Serializable {
+class HbaseUtil extends Serializable with TimeFuncs{
 
   var conf: Configuration = null
 
@@ -242,6 +243,53 @@ class HbaseUtil extends Serializable {
           new Put(phone_no.getBytes)
             .addColumn("0".getBytes(), qualifier.getBytes(), value.getBytes())
 
+        )
+      })
+
+      table.put(muList)
+    } finally {
+      if (table != null) table.close()
+    }
+  }
+
+  def putResultByKeyList_IOP(conn: Connection, tableName: String, keyList: List[(String, String)]): Unit = {
+    val table = conn.getTable(TableName.valueOf(tableName))
+    val currentMonth = timeMillsToDate(getCurrentTimeMillis, "yyyyMM")
+    try {
+      val muList = new ListBuffer[Put]
+      keyList.foreach(res => {
+        val rowKey = res._1
+        val qualifier = res._2
+
+        muList.add(
+          new Put(rowKey.getBytes)
+            .setWriteToWAL(false)
+            .addColumn("0".getBytes(), qualifier.getBytes(), currentMonth.getBytes())
+        )
+      })
+      table.put(muList)
+    } finally {
+      if (table != null) table.close()
+    }
+  }
+
+  def putByKeyColumnList_IOP(conn: Connection
+                         , tableName: String
+                         , family: String
+                         , resultList: List[(String, String, String)]): Unit = {
+    val table = conn.getTable(TableName.valueOf(tableName))
+    try {
+      val muList = new ListBuffer[Put]
+
+      resultList.foreach(res => {
+        val rowKey = res._1
+        val qualifier = res._2
+        val value = res._3
+
+        muList.add(
+          new Put(rowKey.getBytes)
+            .setWriteToWAL(false)
+            .addColumn(family.getBytes(), qualifier.getBytes(), value.getBytes())
         )
       })
 
