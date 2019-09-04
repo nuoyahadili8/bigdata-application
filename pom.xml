@@ -16,6 +16,7 @@
         <module>iop-rule-parser</module>
         <module>tour-application</module>
         <module>carefree-application</module>
+        <module>user-stay-duration</module>
     </modules>
     <properties>
         <scala.version>2.11.8</scala.version>

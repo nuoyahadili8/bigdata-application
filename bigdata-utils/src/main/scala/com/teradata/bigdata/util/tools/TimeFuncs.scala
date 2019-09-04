@@ -76,4 +76,17 @@ trait TimeFuncs extends Serializable {
   def toDate: Date = {
     new Date(getCurrentTimeMillis)
   }
+
+  //HDFS存储的数据文件load_time_m以5分钟一个
+  def getCurrentLoadTime(): (String, String,String) = {
+    val loadTimeTmp = timeMillsToDate(getCurrentTimeMillis, "yyyyMMddHHmm")
+    val currentDate = loadTimeTmp.substring(0, 8)
+    val currentHour = loadTimeTmp.substring(8, 10)
+    val currentMinute = loadTimeTmp.substring(10, 12)
+    if (currentMinute.tail.toInt < 5) {
+      (currentDate, currentHour, currentMinute.head + "0")
+    } else {
+      (currentDate, currentHour, currentMinute.head + "5")
+    }
+  }
 }
