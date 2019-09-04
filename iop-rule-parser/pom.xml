@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>bigdata-application</artifactId>
+        <groupId>com.teradata.bigdata</groupId>
+        <version>1.0</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>iop-rule-parser</artifactId>
+
+    <properties>
+        <hbase-bc.version>1.2.6-bc1.4.0</hbase-bc.version>
+        <hadoop-bc.version>2.8.2-bc1.4.0</hadoop-bc.version>
+        <scala.version>2.10.4</scala.version>
+        <scalatest.version>2.2.4</scalatest.version>
+        <javax.servlet.api.version>3.1.0</javax.servlet.api.version>
+        <json4s-jackson.version>3.2.9</json4s-jackson.version>
+        <jetty.version>9.2.4.v20141103</jetty.version>
+        <logback.version>1.1.3</logback.version>
+        <slf4j.version>1.7.2</slf4j.version>
+        <fastjson.version>1.2.46</fastjson.version>
+
+        <!--TEST-->
+        <scalatra.version>2.3.0</scalatra.version>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.eclipse.jetty.aggregate</groupId>
+            <artifactId>jetty-all</artifactId>
+            <version>9.2.14.v20151106</version>
+        </dependency>
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>javax.servlet-api</artifactId>
+            <version>3.1.0</version>
+        </dependency>
+    </dependencies>
+
+</project>

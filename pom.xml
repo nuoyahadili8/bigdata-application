@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.teradata.bigdata</groupId>
+    <artifactId>bigdata-application</artifactId>
+    <packaging>pom</packaging>
+    <version>1.0</version>
+    <modules>
+        <module>bigdata-utils</module>
+        <module>intelligence-sms</module>
+        <module>bigdata-topic-integration</module>
+        <module>easyDataX</module>
+        <module>iop-rule-parser</module>
+        <module>tour-application</module>
+        <module>carefree-application</module>
+    </modules>
+    <properties>
+        <scala.version>2.11.8</scala.version>
+        <project.version>1.0</project.version>
+        <gbase.version>8.3.81.53-build54.4.2</gbase.version>
+        <connectionpool-client.version>1.2.5</connectionpool-client.version>
+        <hbase-bc.version>1.2.6-bc1.4.0</hbase-bc.version>
+        <spark-bc.version>2.2.0-bc1.4.0</spark-bc.version>
+        <hadoop-bc.version>2.8.2-bc1.4.0</hadoop-bc.version>
+        <fastjson-version>1.2.54</fastjson-version>
+        <hutool-version>2.15.1</hutool-version>
+        <kafka.version>0.10.2.1</kafka.version>
+        <tdjdbc-version>15.10</tdjdbc-version>
+        <jedis-version>2.9.0</jedis-version>
+    </properties>
+
+    <repositories>
+        <repository>
+            <id>nexus</id>
+            <name>nexus</name>
+            <url>http://10.221.158.201:18081/nexus/content/groups/public/</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+    </repositories>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.scala-lang</groupId>
+            <artifactId>scala-library</artifactId>
+            <version>${scala.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.4</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.scala-tools</groupId>
+                <artifactId>maven-scala-plugin</artifactId>
+                <version>2.15.2</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>compile</goal>
+                            <goal>testCompile</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.6.0</version>
+                <configuration>
+                    <source>1.8</source>
+                    <target>1.8</target>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+</project>

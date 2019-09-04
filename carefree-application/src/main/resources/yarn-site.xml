@@ -1,0 +1,529 @@
+<!--Sun Dec 25 11:22:16 2016-->
+    <configuration>
+    
+    <property>
+      <name>hadoop.registry.rm.enabled</name>
+      <value>true</value>
+    </property>
+    
+    <property>
+      <name>hadoop.registry.zk.quorum</name>
+      <value>ss-b02-m20-d13-r730-2:2181,ss-b02-m20-d11-r730-1:2181,ss-b02-m20-d12-r730-1:2181,ss-b02-m20-d12-r730-2:2181,ss-b02-m20-d13-r730-1:2181</value>
+    </property>
+    
+    <property>
+      <name>yarn.acl.enable</name>
+      <value>true</value>
+    </property>
+    
+    <property>
+      <name>yarn.admin.acl</name>
+      <value>yarn,dr.who,kylin</value>
+    </property>
+    
+    <property>
+      <name>yarn.app.mapreduce.am.admin.user.env</name>
+      <value>LD_LIBRARY_PATH=/cmss/bch/bc1.3.2/hadoop/lib/native:/cmss/bch/bc1.3.2/hadoop/lib/native/Linux-amd64-64</value>
+    </property>
+    
+    <property>
+      <name>yarn.application.classpath</name>
+      <value>/cmss/bch/bc1.3.2/hadoop/etc/hadoop/,/cmss/bch/bc1.3.2/hadoop/share/hadoop/mapreduce/*,/cmss/bch/bc1.3.2/hadoop/share/hadoop/mapreduce/lib/*,/cmss/bch/bc1.3.2/hadoop/share/hadoop/common/*,/cmss/bch/bc1.3.2/hadoop/share/hadoop/common/lib/*,/cmss/bch/bc1.3.2/hadoop/share/hadoop/yarn/*,/cmss/bch/bc1.3.2/hadoop/share/hadoop/yarn/lib/*,/cmss/bch/bc1.3.2/hadoop/share/hadoop/hdfs/*,/cmss/bch/bc1.3.2/hadoop/share/hadoop/hdfs/lib/*</value>
+    </property>
+    
+    <property>
+      <name>yarn.client.nodemanager-connect.max-wait-ms</name>
+      <value>180000</value>
+    </property>
+    
+    <property>
+      <name>yarn.client.nodemanager-connect.retry-interval-ms</name>
+      <value>10000</value>
+    </property>
+    
+    <property>
+      <name>yarn.http.policy</name>
+      <value>HTTP_ONLY</value>
+    </property>
+    
+    <property>
+      <name>yarn.log-aggregation-enable</name>
+      <value>true</value>
+    </property>
+    
+    <property>
+      <name>yarn.log-aggregation.retain-seconds</name>
+      <value>86400</value>
+    </property>
+    
+    <property>
+      <name>yarn.log.server.url</name>
+      <value>http://ss-b02-m20-d11-r730-1:19888/jobhistory/logs</value>
+    </property>
+    
+    <property>
+      <name>yarn.nm.liveness-monitor.expiry-interval-ms</name>
+      <value>180000</value>
+    </property>
+    
+    <property>
+      <name>yarn.node-labels.enabled</name>
+      <value>false</value>
+    </property>
+    
+    <property>
+      <name>yarn.node-labels.fs-store.retry-policy-spec</name>
+      <value>2000, 500</value>
+    </property>
+    
+    <property>
+      <name>yarn.node-labels.fs-store.root-dir</name>
+      <value>/system/yarn/node-labels</value>
+    </property>
+    
+    <property>
+      <name>yarn.nodemanager.address</name>
+      <value>0.0.0.0:45454</value>
+    </property>
+    
+    <property>
+      <name>yarn.nodemanager.admin-env</name>
+      <value>MALLOC_ARENA_MAX=$MALLOC_ARENA_MAX</value>
+    </property>
+    
+    <property>
+      <name>yarn.nodemanager.aux-services</name>
+      <value>mapreduce_shuffle</value>
+    </property>
+    
+    <property>
+      <name>yarn.nodemanager.aux-services.mapreduce_shuffle.class</name>
+      <value>org.apache.hadoop.mapred.ShuffleHandler</value>
+    </property>
+    
+    <property>
+      <name>yarn.nodemanager.bind-host</name>
+      <value>0.0.0.0</value>
+    </property>
+    
+    <property>
+      <name>yarn.nodemanager.container-executor.class</name>
+      <value>org.apache.hadoop.yarn.server.nodemanager.LinuxContainerExecutor</value>
+    </property>
+    
+    <property>
+      <name>yarn.nodemanager.container-monitor.interval-ms</name>
+      <value>3000</value>
+    </property>
+    
+    <property>
+      <name>yarn.nodemanager.default.container-executor.class</name>
+      <value>org.apache.hadoop.yarn.server.nodemanager.LinuxContainerExecutor</value>
+    </property>
+    
+    <property>
+      <name>yarn.nodemanager.delete.debug-delay-sec</name>
+      <value>0</value>
+    </property>
+    
+    <property>
+      <name>yarn.nodemanager.disk-health-checker.max-disk-utilization-per-disk-percentage</name>
+      <value>90</value>
+    </property>
+    
+    <property>
+      <name>yarn.nodemanager.disk-health-checker.min-free-space-per-disk-mb</name>
+      <value>1000</value>
+    </property>
+    
+    <property>
+      <name>yarn.nodemanager.disk-health-checker.min-healthy-disks</name>
+      <value>0.25</value>
+    </property>
+    
+    <property>
+      <name>yarn.nodemanager.health-checker.interval-ms</name>
+      <value>135000</value>
+    </property>
+    
+    <property>
+      <name>yarn.nodemanager.health-checker.script.timeout-ms</name>
+      <value>60000</value>
+    </property>
+    
+    <property>
+      <name>yarn.nodemanager.linux-container-executor.cgroups.hierarchy</name>
+      <value>hadoop-yarn</value>
+    </property>
+    
+    <property>
+      <name>yarn.nodemanager.linux-container-executor.cgroups.mount</name>
+      <value>true</value>
+    </property>
+    
+    <property>
+      <name>yarn.nodemanager.linux-container-executor.cgroups.mount-path</name>
+      <value>/cgroup</value>
+    </property>
+    
+    <property>
+      <name>yarn.nodemanager.linux-container-executor.cgroups.strict-resource-usage</name>
+      <value>false</value>
+    </property>
+    
+    <property>
+      <name>yarn.nodemanager.linux-container-executor.group</name>
+      <value>hadoop</value>
+    </property>
+    
+    <property>
+      <name>yarn.nodemanager.linux-container-executor.nonsecure-mode.local-user</name>
+      <value>yarn</value>
+    </property>
+    
+    <property>
+      <name>yarn.nodemanager.linux-container-executor.resources-handler.class</name>
+      <value>org.apache.hadoop.yarn.server.nodemanager.util.CgroupsLCEResourcesHandler</value>
+    </property>
+    
+    <property>
+      <name>yarn.nodemanager.local-dirs</name>
+      <value>/data1/hadoop/yarn/local,/data10/hadoop/yarn/local,/data11/hadoop/yarn/local,/data12/hadoop/yarn/local,/data2/hadoop/yarn/local,/data3/hadoop/yarn/local,/data4/hadoop/yarn/local,/data5/hadoop/yarn/local,/data6/hadoop/yarn/local,/data7/hadoop/yarn/local,/data8/hadoop/yarn/local,/data9/hadoop/yarn/local</value>
+    </property>
+    
+    <property>
+      <name>yarn.nodemanager.log-aggregation.compression-type</name>
+      <value>gz</value>
+    </property>
+    
+    <property>
+      <name>yarn.nodemanager.log-aggregation.debug-enabled</name>
+      <value>false</value>
+    </property>
+    
+    <property>
+      <name>yarn.nodemanager.log-aggregation.num-log-files-per-app</name>
+      <value>30</value>
+    </property>
+    
+    <property>
+      <name>yarn.nodemanager.log-aggregation.roll-monitoring-interval-seconds</name>
+      <value>-1</value>
+    </property>
+    
+    <property>
+      <name>yarn.nodemanager.log-dirs</name>
+      <value>/data1/hadoop/yarn/log,/data10/hadoop/yarn/log,/data11/hadoop/yarn/log,/data12/hadoop/yarn/log,/data2/hadoop/yarn/log,/data3/hadoop/yarn/log,/data4/hadoop/yarn/log,/data5/hadoop/yarn/log,/data6/hadoop/yarn/log,/data7/hadoop/yarn/log,/data8/hadoop/yarn/log,/data9/hadoop/yarn/log</value>
+    </property>
+    
+    <property>
+      <name>yarn.nodemanager.log.retain-second</name>
+      <value>604800</value>
+    </property>
+    
+    <property>
+      <name>yarn.nodemanager.recovery.dir</name>
+      <value>/var/log/cmss/hadoop-yarn/nodemanager/recovery-state</value>
+    </property>
+    
+    <property>
+      <name>yarn.nodemanager.recovery.enabled</name>
+      <value>true</value>
+    </property>
+    
+    <property>
+      <name>yarn.nodemanager.remote-app-log-dir</name>
+      <value>/app-logs</value>
+    </property>
+    
+    <property>
+      <name>yarn.nodemanager.remote-app-log-dir-suffix</name>
+      <value>logs</value>
+    </property>
+    
+    <property>
+      <name>yarn.nodemanager.resource.cpu-vcores</name>
+      <value>96</value>
+    </property>
+    
+    <property>
+      <name>yarn.nodemanager.resource.memory-mb</name>
+      <value>98304</value>
+    </property>
+    
+    <property>
+      <name>yarn.nodemanager.resource.percentage-physical-cpu-limit</name>
+      <value>100</value>
+    </property>
+    
+    <property>
+      <name>yarn.nodemanager.vmem-check-enabled</name>
+      <value>false</value>
+    </property>
+    
+    <property>
+      <name>yarn.nodemanager.vmem-pmem-ratio</name>
+      <value>2.1</value>
+    </property>
+    
+    <property>
+      <name>yarn.resourcemanager.address</name>
+      <value>ss-b02-m20-d11-r730-1:8050</value>
+    </property>
+    
+    <property>
+      <name>yarn.resourcemanager.admin.address</name>
+      <value>ss-b02-m20-d11-r730-1:8141</value>
+    </property>
+    
+    <property>
+      <name>yarn.resourcemanager.admin.address.rm1</name>
+      <value>ss-b02-m20-d11-r730-1:8033</value>
+    </property>
+    
+    <property>
+      <name>yarn.resourcemanager.admin.address.rm2</name>
+      <value>ss-b02-m20-d12-r730-1:8033</value>
+    </property>
+    
+    <property>
+      <name>yarn.resourcemanager.am.max-attempts</name>
+      <value>2</value>
+    </property>
+    
+    <property>
+      <name>yarn.resourcemanager.bind-host</name>
+      <value>0.0.0.0</value>
+    </property>
+    
+    <property>
+      <name>yarn.resourcemanager.cluster-id</name>
+      <value>yarn-cluster</value>
+    </property>
+    
+    <property>
+      <name>yarn.resourcemanager.connect.max-wait.ms</name>
+      <value>900000</value>
+    </property>
+    
+    <property>
+      <name>yarn.resourcemanager.connect.retry-interval.ms</name>
+      <value>30000</value>
+    </property>
+    
+    <property>
+      <name>yarn.resourcemanager.container.liveness-monitor.interval-ms</name>
+      <value>180000</value>
+    </property>
+    
+    <property>
+      <name>yarn.resourcemanager.fs.state-store.retry-policy-spec</name>
+      <value>2000, 500</value>
+    </property>
+    
+    <property>
+      <name>yarn.resourcemanager.fs.state-store.uri</name>
+      <value> </value>
+    </property>
+    
+    <property>
+      <name>yarn.resourcemanager.ha.automatic-failover.zk-base-path</name>
+      <value>/yarn-leader-election</value>
+    </property>
+    
+    <property>
+      <name>yarn.resourcemanager.ha.enabled</name>
+      <value>true</value>
+    </property>
+    
+    <property>
+      <name>yarn.resourcemanager.ha.rm-ids</name>
+      <value>rm1,rm2</value>
+    </property>
+    
+    <property>
+      <name>yarn.resourcemanager.hostname</name>
+      <value>ss-b02-m20-d11-r730-1</value>
+    </property>
+    
+    <property>
+      <name>yarn.resourcemanager.hostname.rm1</name>
+      <value>ss-b02-m20-d11-r730-1</value>
+    </property>
+    
+    <property>
+      <name>yarn.resourcemanager.hostname.rm2</name>
+      <value>ss-b02-m20-d12-r730-1</value>
+    </property>
+    
+    <property>
+      <name>yarn.resourcemanager.nodemanagers.heartbeat-interval-ms</name>
+      <value>100</value>
+    </property>
+    
+    <property>
+      <name>yarn.resourcemanager.nodes.exclude-path</name>
+      <value>/cmss/bch/bc1.3.2/hadoop/etc/hadoop/yarn.exclude</value>
+    </property>
+    
+    <property>
+      <name>yarn.resourcemanager.recovery.enabled</name>
+      <value>true</value>
+    </property>
+    
+    <property>
+      <name>yarn.resourcemanager.resource-tracker.address</name>
+      <value>ss-b02-m20-d11-r730-1:8025</value>
+    </property>
+    
+    <property>
+      <name>yarn.resourcemanager.scheduler.address</name>
+      <value>ss-b02-m20-d11-r730-1:8030</value>
+    </property>
+    
+    <property>
+      <name>yarn.resourcemanager.scheduler.class</name>
+      <value>org.apache.hadoop.yarn.server.resourcemanager.scheduler.fair.FairScheduler</value>
+    </property>
+    
+    <property>
+      <name>yarn.resourcemanager.scheduler.monitor.enable</name>
+      <value>false</value>
+    </property>
+    
+    <property>
+      <name>yarn.resourcemanager.state-store.max-completed-applications</name>
+      <value>${yarn.resourcemanager.max-completed-applications}</value>
+    </property>
+    
+    <property>
+      <name>yarn.resourcemanager.store.class</name>
+      <value>org.apache.hadoop.yarn.server.resourcemanager.recovery.ZKRMStateStore</value>
+    </property>
+    
+    <property>
+      <name>yarn.resourcemanager.system-metrics-publisher.dispatcher.pool-size</name>
+      <value>10</value>
+    </property>
+    
+    <property>
+      <name>yarn.resourcemanager.system-metrics-publisher.enabled</name>
+      <value>true</value>
+    </property>
+    
+    <property>
+      <name>yarn.resourcemanager.webapp.address</name>
+      <value>ss-b02-m20-d11-r730-1:8088</value>
+    </property>
+    
+    <property>
+      <name>yarn.resourcemanager.webapp.address.rm1</name>
+      <value>ss-b02-m20-d11-r730-1:8088</value>
+    </property>
+    
+    <property>
+      <name>yarn.resourcemanager.webapp.address.rm2</name>
+      <value>ss-b02-m20-d12-r730-1:8088</value>
+    </property>
+    
+    <property>
+      <name>yarn.resourcemanager.webapp.delegation-token-auth-filter.enabled</name>
+      <value>false</value>
+    </property>
+    
+    <property>
+      <name>yarn.resourcemanager.webapp.https.address</name>
+      <value>ss-b02-m20-d11-r730-1:8090</value>
+    </property>
+    
+    <property>
+      <name>yarn.resourcemanager.webapp.https.address.rm1</name>
+      <value>ss-b02-m20-d11-r730-1:8090</value>
+    </property>
+    
+    <property>
+      <name>yarn.resourcemanager.webapp.https.address.rm2</name>
+      <value>ss-b02-m20-d12-r730-1:8090</value>
+    </property>
+    
+    <property>
+      <name>yarn.resourcemanager.work-preserving-recovery.enabled</name>
+      <value>true</value>
+    </property>
+    
+    <property>
+      <name>yarn.resourcemanager.work-preserving-recovery.scheduling-wait-ms</name>
+      <value>10000</value>
+    </property>
+    
+    <property>
+      <name>yarn.resourcemanager.zk-acl</name>
+      <value>world:anyone:rwcda</value>
+    </property>
+    
+    <property>
+      <name>yarn.resourcemanager.zk-address</name>
+      <value>ss-b02-m20-d11-r730-1:2181,ss-b02-m20-d12-r730-1:2181,ss-b02-m20-d12-r730-2:2181,ss-b02-m20-d13-r730-1:2181,ss-b02-m20-d13-r730-2:2181</value>
+    </property>
+    
+    <property>
+      <name>yarn.resourcemanager.zk-num-retries</name>
+      <value>1000</value>
+    </property>
+    
+    <property>
+      <name>yarn.resourcemanager.zk-retry-interval-ms</name>
+      <value>1000</value>
+    </property>
+    
+    <property>
+      <name>yarn.resourcemanager.zk-state-store.parent-path</name>
+      <value>/rmstore</value>
+    </property>
+    
+    <property>
+      <name>yarn.resourcemanager.zk-timeout-ms</name>
+      <value>10000</value>
+    </property>
+    
+    <property>
+      <name>yarn.scheduler.fair.allow-undeclared-pools</name>
+      <value>true</value>
+    </property>
+    
+    <property>
+      <name>yarn.scheduler.fair.preemption</name>
+      <value>false</value>
+    </property>
+    
+    <property>
+      <name>yarn.scheduler.fair.user-as-default-queue</name>
+      <value>true</value>
+    </property>
+    
+    <property>
+      <name>yarn.scheduler.maximum-allocation-mb</name>
+      <value>98304</value>
+    </property>
+    
+    <property>
+      <name>yarn.scheduler.maximum-allocation-vcores</name>
+      <value>32</value>
+    </property>
+    
+    <property>
+      <name>yarn.scheduler.minimum-allocation-mb</name>
+      <value>1024</value>
+    </property>
+    
+    <property>
+      <name>yarn.scheduler.minimum-allocation-vcores</name>
+      <value>1</value>
+    </property>
+    
+    <property>
+      <name>yarn.timeline-service.bind-host</name>
+      <value>0.0.0.0</value>
+    </property>
+    
+  </configuration>

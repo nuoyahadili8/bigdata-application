@@ -1,0 +1,4 @@
+Manifest-Version: 1.0
+Main-Class: com.teradata.bigdata.kafka.integration.IntegrationKafkaTop
+ icWithStructStreaming
+

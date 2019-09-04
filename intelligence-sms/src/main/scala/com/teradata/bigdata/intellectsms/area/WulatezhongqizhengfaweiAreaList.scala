@@ -1,0 +1,5 @@
+package com.teradata.bigdata.intellectsms.area
+
+class WulatezhongqizhengfaweiAreaList {
+  lazy val wulatezhongqizhengfawei = Set("18307-82678285", "18307-82919692", "18307-82919691", "18307-82919437", "18307-82919436", "18317-83099148", "18307-82678283", "18307-82919693", "18307-82919435", "18317-104985731", "18307-82678284", "18317-83099147", "18317-83099149")
+}
