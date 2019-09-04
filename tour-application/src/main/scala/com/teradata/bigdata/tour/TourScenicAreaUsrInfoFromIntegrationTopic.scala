@@ -248,8 +248,8 @@ object TourScenicAreaUsrInfoFromIntegrationTopic extends TimeFuncs
                   kafkaProducer.value.send(TARGET_TOPIC, in)
                 }
               }
-              //              如果此人不在景区
-              //                用户离开景区,当前不在景区
+              // 如果此人不在景区
+              // 用户离开景区,当前不在景区
               else {
                 tmpUserLocationMap.update(phoneNo, "X")
                 // 如果用户这次不在景区，上次在某个景区，表示离开了上一次景区
@@ -267,13 +267,13 @@ object TourScenicAreaUsrInfoFromIntegrationTopic extends TimeFuncs
             }
             else {
               // 表示该人首次进入景区
-              //              //            如果在上个批次的全量表与临时表都找不到此人
-              //              //              如果此人此次进入景区
+              // 如果在上个批次的全量表与临时表都找不到此人
+              // 如果此人此次进入景区
               if (valueOfSelectLacCi.contains(lacCi)) { //判断此人的基站是在景区里面
                 val sceneryFromSelectLacCi = valueOfSelectLacCi(lacCi).sceneryId
                 tmpUserLocationMap.update(phoneNo, sceneryFromSelectLacCi)
-                //            拼接结果
-                //    业务流程开始时间，手机号，imei,lac,cell,上行流量，下行流量，进出景区标志（1进入，0离开），数据类型
+                // 拼接结果
+                // 业务流程开始时间，手机号，imei,lac,cell,上行流量，下行流量，进出景区标志（1进入，0离开），数据类型
                 val firstInOrOut = startTime + "," + f(1).toString.substring(2) + "," + f(2) +
                   "," + Long.toHexString(Long.parseLong(f(3).toString)) +
                   "," + Long.toHexString(Long.parseLong(f(4).toString)) +
