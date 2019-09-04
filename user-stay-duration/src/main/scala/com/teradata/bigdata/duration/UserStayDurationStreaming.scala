@@ -100,8 +100,8 @@ object UserStayDurationStreaming extends TimeFuncs with UserStayDurationFunc{
         false
       }
     }).map(m => {
-      //imsi,UserInfo(用户归属省份,用户归属地市,用户所在省份,用户所在地市,imei,数据来源,imsi,手机号,业务开始时间,lac,cell)
-      (m(5),UserInfo(m(2),m(3),m(0),m(1),m(6),m(15),m(5),m(7),m(10),m(19),m(20)))
+      //imsi,UserInfo(用户归属省份 ,用户归属地市 ,用户所在省份 ,用户所在地市 ,imei ,数据来源 ,imsi ,手机号 ,业务开始时间 ,lac   ,cell)
+      (m(5) ,UserInfo(m(2)       ,m(3)        ,m(0)       ,m(1)        ,m(6) ,m(15)   ,m(5) ,m(7)  ,m(10)       ,m(19) ,m(20)))
     })
       .filter(!_._2.startTime.equals(""))
       .foreachRDD(rdd =>{
