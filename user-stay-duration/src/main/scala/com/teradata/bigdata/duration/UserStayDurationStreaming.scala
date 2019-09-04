@@ -21,7 +21,7 @@ import scala.collection.mutable
 
 /**
   * @Project:
-  * @Description:
+  * @Description:  用户实时驻留时长
   * @Version 1.0.0
   * @Throws SystemException:
   * @Author: <li>2019/9/4/004 Administrator Create 1.0
@@ -210,6 +210,7 @@ object UserStayDurationStreaming extends TimeFuncs with UserStayDurationFunc{
           fileSystem.delete(currentLoadPath, true)
         }
       })
+
     ssc.start()
     ssc.awaitTermination()
     ssc.stop()
