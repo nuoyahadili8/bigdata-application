@@ -20,7 +20,7 @@ import scala.collection.mutable
 import scala.collection.mutable.ListBuffer
 /**
   * @Project:
-  * @Description:
+  * @Description: 换机事件
   * @Version 1.0.0
   * @Throws SystemException:
   * @Author: <li>2019/9/4/004 Administrator Create 1.0
@@ -100,7 +100,7 @@ object SendWelcomeToChangePhone extends TimeFuncs
       }
     }).map(m => {
       //(phone_no, ((start_time, start_time_long, start_time_date), imei, phone_no))
-      (m(8),((m(10),m(9).toLong,strToDate(m(10), "yyyy-MM-dd HH:mm:ss")),m(6),m(8)))
+      (m(7),((m(10),m(9).toLong,strToDate(m(10), "yyyy-MM-dd HH:mm:ss")),m(6),m(7)))
     }).foreachRDD(rdd =>{
       updateBroadcast
       rdd.partitionBy(new HashPartitioner(100)).foreachPartition(partition =>{

@@ -538,4 +538,29 @@ class HbaseUtil extends Serializable with TimeFuncs{
     }
   }
 
+  def putResultByKeyList_SCHOOL(conn: Connection, tableName: String, resultList: List[(String, (String, Long, Long))]): Unit = {
+    val table = conn.getTable(TableName.valueOf(tableName))
+    try {
+      val muList = new ListBuffer[Put]
+
+      resultList.foreach(res => {
+        val phone_no = res._1
+        val eventType = res._2._1
+        val startTime = res._2._2
+        val duration = res._2._3
+
+        muList.add(
+          new Put(phone_no.getBytes)
+            .addColumn("0".getBytes(), "eventType".getBytes(), eventType.getBytes())
+            .addColumn("0".getBytes(), "startTime".getBytes(), startTime.toString.getBytes())
+            .addColumn("0".getBytes(), "duration".getBytes(), duration.toString.getBytes())
+        )
+      })
+
+      table.put(muList)
+    } finally {
+      if (table != null) table.close()
+    }
+  }
+
 }
