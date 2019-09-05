@@ -36,7 +36,6 @@ public class FileSink extends AbstractSink implements Configurable {
 
     private String path ;
     private static final String defaultFileName = "FlumeData";
-    private static final String extensionName = ".AVL";
     private static final int defaultMaxOpenFiles = 50;
 
     /**
@@ -58,6 +57,7 @@ public class FileSink extends AbstractSink implements Configurable {
 
     private int maxOpenFiles ;
     private String extension = ".AVL";
+    private String dateFormatStr = "yyyyMMddHHmmss";
 
     private ScheduledExecutorService timedRollerPool ;
 
@@ -73,6 +73,7 @@ public class FileSink extends AbstractSink implements Configurable {
         this.path = directory + "/" + fileName;
 
         maxOpenFiles = context.getInteger("file.maxOpenFiles" , defaultMaxOpenFiles);
+        dateFormatStr = context.getString("file.dateFormat" , dateFormatStr);
 
         serializerType = context.getString("sink.serializer" , "TEXT" );
         serializerContext = new Context(context.getSubProperties(EventSerializer. CTX_PREFIX));
@@ -110,7 +111,7 @@ public class FileSink extends AbstractSink implements Configurable {
                 // we haven't seen this file yet, so open it and cache the
                 // handle
                 if (bucketFileWriter == null) {
-                    bucketFileWriter = new BucketFileWriter();
+                    bucketFileWriter = new BucketFileWriter(dateFormatStr);
                     bucketFileWriter.open(realPath, serializerType,
                             serializerContext, rollInterval , timedRollerPool,
                             sfWriters,extension);

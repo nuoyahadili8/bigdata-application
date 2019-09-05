@@ -58,6 +58,10 @@ public class BucketFileWriter {
         fileExtensionDateStr =new AtomicReference(new SimpleDateFormat("yyyyMMddHHmmss").format(System.currentTimeMillis()));
     }
 
+    public BucketFileWriter(String dateFormat){
+        fileExtensionDateStr =new AtomicReference(new SimpleDateFormat(dateFormat).format(System.currentTimeMillis()));
+    }
+
     public void open(final String filePath, String serializerType,
                      Context serializerContext, final long rollInterval,
                      final ScheduledExecutorService timedRollerPool,
