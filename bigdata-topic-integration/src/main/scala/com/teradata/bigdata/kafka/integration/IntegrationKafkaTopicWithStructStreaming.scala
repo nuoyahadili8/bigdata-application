@@ -3,6 +3,7 @@ package com.teradata.bigdata.kafka.integration
 import com.teradata.bigdata.util.kafka.KafkaProperties
 import com.teradata.bigdata.util.spark.SparkConfig
 import com.teradata.bigdata.util.tools.TimeFuncs
+import com.xiaoleilu.hutool.util.StrUtil
 import org.apache.spark.sql.{DataFrame, Row, SparkSession}
 
 /**
@@ -80,7 +81,10 @@ object IntegrationKafkaTopicWithStructStreaming extends TimeFuncs{
                 val startTimeSSS = timeMillsToDate(startTimeLong, "yyyy-MM-dd HH:mm:ss.SSS")
                 val startTime = startTimeSSS.substring(0, 19)
                 val phoneNo = arr(11).replaceAll("^86", "")
-                val phoneNoPartition = phoneNo.substring(phoneNo.length - 2, phoneNo.length) + phoneNo
+                var phoneNoPartition = ""
+                if (!StrUtil.isEmpty(phoneNo)){
+                  phoneNoPartition = phoneNo.substring(phoneNo.length - 2, phoneNo.length) + phoneNo
+                }
                 val dataType = "S1-MME"
                 val resLine = arr(1) + "," + arr(2) + "," + arr(3) + "," + arr(4) + "," + arr(5) + "," + arr(9) + "," + arr(10) + "," + phoneNo + "," + arr(12) + "," + arr(13) + "," + startTimeSSS + "," + startTime + "," + arr(14) + "," + arr(15) + "," + arr(16) + "," + arr(17) + "," + arr(19) + "," + arr(37) + "," + arr(38) + "," + arr(43) + "," + arr(44) + "," + arr(45) + "," + arr(46) + "," + dataType + "," + phoneNoPartition
                 resultList = resLine :: resultList
@@ -107,7 +111,10 @@ object IntegrationKafkaTopicWithStructStreaming extends TimeFuncs{
               val imsi = arr(21)
               val imei = arr(22)
               val phoneNo = arr(18).replaceAll("^86", "")
-              val phoneNoPartition = phoneNo.substring(phoneNo.length - 2, phoneNo.length) + phoneNo
+              var phoneNoPartition = ""
+              if (!StrUtil.isEmpty(phoneNo)){
+                phoneNoPartition = phoneNo.substring(phoneNo.length - 2, phoneNo.length) + phoneNo
+              }
               val endTime = arr(1)
               //        val local_city = ""
               val roam_type = arr(73)
