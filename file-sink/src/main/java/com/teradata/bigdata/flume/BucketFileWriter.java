@@ -33,9 +33,8 @@ public class BucketFileWriter {
     private static final Logger logger = LoggerFactory.getLogger(BucketFileWriter.class);
     private static final String IN_USE_EXT = ".tmp";
     /**
-     * This lock ensures that only one thread can open a file at a time.
+     * 这个锁确保一次只有一个线程可以打开一个文件。
      */
-
     private AtomicReference<String> fileExtensionDateStr;
 
     private OutputStream outputStream;
@@ -47,13 +46,10 @@ public class BucketFileWriter {
     private String extension;
 
     /**
-     * Close the file handle and rename the temp file to the permanent filename.
-     * Safe to call multiple times. Logs HDFSWriter.close() exceptions.
-     *
+     * 关闭文件句柄并将临时文件重命名为永久文件名。可以安全地多次呼叫。记录hdfswriter.close（）异常。
      * @throws IOException
-     *             On failure to rename if temp file exists.
+     * On failure to rename if temp file exists.
      */
-
     public BucketFileWriter() {
         fileExtensionDateStr =new AtomicReference(new SimpleDateFormat("yyyyMMddHHmmss").format(System.currentTimeMillis()));
     }
@@ -107,7 +103,7 @@ public class BucketFileWriter {
     }
 
     /**
-     * Rename bucketPath file from .tmp to permanent location.
+     * 将bucketpath文件从.tmp重命名为永久位置。
      */
     private void renameBucket() {
         File srcPath = new File(filePath + fileExtensionDateStr + extension + IN_USE_EXT);

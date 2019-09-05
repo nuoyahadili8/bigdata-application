@@ -39,10 +39,8 @@ public class FileSink extends AbstractSink implements Configurable {
     private static final int defaultMaxOpenFiles = 50;
 
     /**
-     * Default length of time we wait for blocking BucketWriter calls before
-     * timing out the operation. Intended to prevent server hangs.
+     * 等待阻止BucketWriter调用的默认时间长度操作超时之前，防止服务器挂起。
      */
-
     private long txnEventMax ;
 
     private FileWriterLinkedHashMap sfWriters ;
@@ -103,13 +101,12 @@ public class FileSink extends AbstractSink implements Configurable {
                     break;
                 }
 
-                // reconstruct the path name by substituting place holders
+                // 通过替换占位符重建路径名
                 String realPath = BucketPath.escapeString(path, event.getHeaders(), needRounding,
                         roundUnit, roundValue );
                 BucketFileWriter bucketFileWriter = sfWriters.get(realPath);
 
-                // we haven't seen this file yet, so open it and cache the
-                // handle
+                // 还没有看到这个文件，所以打开它并缓存句柄
                 if (bucketFileWriter == null) {
                     bucketFileWriter = new BucketFileWriter(dateFormatStr);
                     bucketFileWriter.open(realPath, serializerType,
@@ -118,12 +115,12 @@ public class FileSink extends AbstractSink implements Configurable {
                     sfWriters.put(realPath, bucketFileWriter);
                 }
 
-                // track the buckets getting written in this transaction
+                // 跟踪此事务中写入的存储桶
                 if (!writers.contains(bucketFileWriter)) {
                     writers.add(bucketFileWriter);
                 }
 
-                // Write the data to File
+                // 将数据写入文件
                 bucketFileWriter.append(event);
             }
 
@@ -135,7 +132,7 @@ public class FileSink extends AbstractSink implements Configurable {
                 sinkCounter.incrementBatchUnderflowCount();
             }
 
-            // flush all pending buckets before committing the transaction
+            // 在提交事务之前刷新所有挂起的存储桶
             for (BucketFileWriter bucketFileWriter : writers) {
                 if (!bucketFileWriter.isBatchComplete()) {
                     flush(bucketFileWriter);
