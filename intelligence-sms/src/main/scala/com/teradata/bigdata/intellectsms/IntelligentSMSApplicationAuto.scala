@@ -7,6 +7,7 @@ import com.teradata.bigdata.util.hbase.HbaseUtil
 import com.teradata.bigdata.util.kafka.{KafkaProperties, KafkaSink}
 import com.teradata.bigdata.util.spark.{BroadcastWrapper, SparkConfig}
 import com.teradata.bigdata.util.tools.TimeFuncs
+import com.xiaoleilu.hutool.util.StrUtil
 import org.apache.kafka.clients.consumer.ConsumerConfig
 import org.apache.kafka.common.serialization.{StringDeserializer, StringSerializer}
 import org.apache.spark.HashPartitioner
@@ -84,14 +85,14 @@ object IntelligentSMSApplicationAuto extends TimeFuncs with Serializable with Yu
     kafkaStreams.map(m =>{
       m.value().split(",", -1)
     }).filter((f: Array[String]) => {
-      if (f.length == 23) {
+      if (f.length >= 25 && !StrUtil.isEmpty(f(7)) && f(7).length > 2 ) {
         true
       } else{
         false
       }
     }).map(m => {
       //     (业务流程开始时间)    ,手机号 ,所在地市  ,用户漫游类型 ,归属省  ,归属地市  ,lac   ,cell
-      (m(7),((m(10),m(9).toLong) ,m(7)  ,m(1)     ,m(4)        ,m(2)   ,m(3)     ,m(19) ,m(20)))
+      (m(7),((m(11),m(9).toLong) ,m(7)  ,m(1)     ,m(4)        ,m(2)   ,m(3)     ,m(19) ,m(20)))
     }).foreachRDD(rdd =>{
       updateBroadcast
       rdd.partitionBy(new HashPartitioner(partitions = 200)).foreachPartition(partition =>{

@@ -7,6 +7,7 @@ import com.teradata.bigdata.intellectsms.users.DangjianUsers
 import com.teradata.bigdata.util.kafka.{KafkaProperties, KafkaSink}
 import com.teradata.bigdata.util.spark.{BroadcastWrapper, SparkConfig}
 import com.teradata.bigdata.util.tools.TimeFuncs
+import com.xiaoleilu.hutool.util.StrUtil
 import org.apache.kafka.clients.consumer.{ConsumerConfig, ConsumerRecord}
 import org.apache.kafka.common.serialization.{StringDeserializer, StringSerializer}
 import org.apache.spark.HashPartitioner
@@ -93,7 +94,7 @@ object IntelligentSMSApplication extends TimeFuncs with Serializable {
     kafkaStreams.map(m =>{
       m.value().split(",", -1)
     }).filter((f: Array[String]) => {
-      if (f.length == 25) {
+      if (f.length >= 25 && !StrUtil.isEmpty(f(7)) && f(7).length > 2) {
        true
       } else{
         false

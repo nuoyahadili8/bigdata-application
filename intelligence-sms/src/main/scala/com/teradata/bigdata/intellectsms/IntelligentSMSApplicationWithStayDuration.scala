@@ -7,6 +7,7 @@ import com.teradata.bigdata.util.hbase.HbaseUtil
 import com.teradata.bigdata.util.kafka.{KafkaProperties, KafkaSink}
 import com.teradata.bigdata.util.spark.SparkConfig
 import com.teradata.bigdata.util.tools.TimeFuncs
+import com.xiaoleilu.hutool.util.StrUtil
 import org.apache.hadoop.hbase.client.Connection
 import org.apache.kafka.clients.consumer.ConsumerConfig
 import org.apache.kafka.common.serialization.{StringDeserializer, StringSerializer}
@@ -75,7 +76,7 @@ object IntelligentSMSApplicationWithStayDuration extends TimeFuncs with Serializ
     kafkaStreams.map(m =>{
       m.value().split(",", -1)
     }).filter((f: Array[String]) => {
-      if (f.length == 23) {
+      if (f.length >= 25 && !StrUtil.isEmpty(f(7)) && f(7).length > 2) {
         true
       } else{
         false

@@ -228,13 +228,25 @@ trait YunmasFunc extends TimeFuncs with GbaseConnect with Serializable {
                        , userLocalCity: String
                        , userLacCell: String
                        , userRoamType: String): Boolean = {
-    if (yunmasActInfo.localCitySet.size > 0 && !yunmasActInfo.localCitySet.contains(userLocalCity)) return false
+    var isFlag1 = true
+    var isFlag2 = true
+    var isFlag3 = true
+    /*
+            东华信通的映射关系：
+            1 本地用户       ==>4
+            2 常驻用户
+            3 省内漫游用户   ==>3
+            4 省际漫游用户   ==>2
+            5 国际漫游用户   ==>1
+            6 边界漫游用户
+             */
+    if (yunmasActInfo.localCitySet.size > 0 && !yunmasActInfo.localCitySet.contains(userLocalCity)) isFlag1 = false
 
-    if (yunmasActInfo.lacCellSet.size > 0 && !yunmasActInfo.lacCellSet.contains(userLacCell)) return false
+    if (yunmasActInfo.lacCellSet.size > 0 && !yunmasActInfo.lacCellSet.contains(userLacCell)) isFlag2 = false
 
-    if (yunmasActInfo.roamTypeSet.size > 0 && !yunmasActInfo.roamTypeSet.contains(userRoamType)) return false
+    if (yunmasActInfo.roamTypeSet.size > 0 && !yunmasActInfo.roamTypeSet.contains(userRoamType)) isFlag3 = false
 
-    true
+    isFlag1 && isFlag2 && isFlag3
   }
 
 
