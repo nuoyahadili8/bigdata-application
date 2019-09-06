@@ -11,6 +11,7 @@ import com.teradata.bigdata.util.kafka.{KafkaProperties, KafkaSink}
 import com.teradata.bigdata.util.spark.{BroadcastWrapper, SparkConfig}
 import com.teradata.bigdata.util.teradata.TeradataConnect
 import com.teradata.bigdata.util.tools.TimeFuncs
+import com.xiaoleilu.hutool.util.StrUtil
 import org.apache.kafka.common.serialization.{StringDeserializer, StringSerializer}
 import org.apache.spark.HashPartitioner
 import org.apache.spark.broadcast.Broadcast
@@ -120,14 +121,14 @@ object TourScenicAreaUsrInfoFromIntegrationTopic extends TimeFuncs
     kafkaStreams.map(m =>{
       m.value().split(",", -1)
     }).filter((f: Array[String]) => {
-      if (f.length == 25) {
+      if (f.length == 25 && !StrUtil.isEmpty(f(7)) && f(7).length > 2) {
         true
       } else{
         false
       }
     }).map(m => {
       //手机号分区字段     业务流程开始时间  ,手机号 ,imei    ,lac     ,cell   ,上行流量  ,下行流量  ,数据类型
-      (m(24),Row(         m(10)          ,m(7)   ,m(6)    ,m(19)   ,m(20)  ,""       ,""       ,m(23)   ,m(9).toLong))
+      (m(24),Row(         m(11)          ,m(7)   ,m(6)    ,m(19)   ,m(20)  ,""       ,""       ,m(23)   ,m(9).toLong))
     }).foreachRDD(rdd =>{
       updateBroadcast
       val userCheckAllItr: RDD[((String, ScenicInfo), (Int, Int, Int))] = rdd
