@@ -5,15 +5,16 @@ import java.util.{Calendar, Properties}
 
 import com.alibaba.fastjson.JSONObject
 import com.teradata.bigdata.tour.bean.ScenicInfo
+import com.teradata.bigdata.tour.conf.SparkConfig
 import com.teradata.bigdata.tour.utils.TourFuncs
 import com.teradata.bigdata.util.hbase.HbaseUtil
 import com.teradata.bigdata.util.kafka.{KafkaProperties, KafkaSink}
-import com.teradata.bigdata.util.spark.{BroadcastWrapper, SparkConfig}
+import com.teradata.bigdata.util.spark.BroadcastWrapper
 import com.teradata.bigdata.util.teradata.TeradataConnect
 import com.teradata.bigdata.util.tools.TimeFuncs
 import com.xiaoleilu.hutool.util.StrUtil
 import org.apache.kafka.common.serialization.{StringDeserializer, StringSerializer}
-import org.apache.spark.HashPartitioner
+import org.apache.spark.{HashPartitioner, SparkConf}
 import org.apache.spark.broadcast.Broadcast
 import org.apache.spark.sql.Row
 import org.apache.spark.streaming.{Seconds, StreamingContext}
@@ -47,8 +48,7 @@ object TourScenicAreaUsrInfoFromIntegrationTopic extends TimeFuncs
   def main(args: Array[String]): Unit = {
     val kafkaProperties = new KafkaProperties()
     val sparkConfig = new SparkConfig
-    val conf = sparkConfig.getConf.setAppName(classNameStr)
-    conf.set("spark.streaming.kafka.consumer.poll.ms", "60000")
+    val conf: SparkConf = sparkConfig.getConf.setAppName(classNameStr)
     val ssc = new StreamingContext(conf, Seconds(20))
     val topics = Array(kafkaProperties.integrationTopic)
     val brokers = kafkaProperties.kafkaBrokers.mkString(",")
@@ -72,9 +72,8 @@ object TourScenicAreaUsrInfoFromIntegrationTopic extends TimeFuncs
       , ConsumerStrategies.Subscribe[String, String](topics, kafkaParams)
     )
 
-    val hbaseUtil = new HbaseUtil
-    val hbaseUtilBroadcast = ssc.sparkContext.broadcast(hbaseUtil)
-//    val connDriver = hbaseUtilDriver.createHbaseConnection
+    val hbaseUtilDriver = new HbaseUtil
+    val connDriver = hbaseUtilDriver.createHbaseConnection
 
     val jedisDmz = getDmzRedisConnect
     jedisDmz.auth("nmtour")
@@ -135,10 +134,9 @@ object TourScenicAreaUsrInfoFromIntegrationTopic extends TimeFuncs
       updateBroadcast
       val userCheckAllItr: RDD[((String, ScenicInfo), (Int, Int, Int))] = rdd
         .partitionBy(new HashPartitioner(300))
-        .mapPartitions(partition =>{
-          val hbaseUtilBroadcastExecutor = hbaseUtilBroadcast.value
-          val hbaseUtilConnExecutor = hbaseUtilBroadcastExecutor.createHbaseConnection
-
+        .mapPartitions((partition: Iterator[(String, Row)]) => {
+          val hbaseUtilExecutor: HbaseUtil = new HbaseUtil
+          val hbaseUtilConnExecutor = hbaseUtilExecutor.createHbaseConnection
           //异常用户
           val abnormalUser: Set[String] = abnormalUserBro.value
           val TARGET_TOPIC = "YZ_TD_NM_TOUR"
@@ -152,16 +150,16 @@ object TourScenicAreaUsrInfoFromIntegrationTopic extends TimeFuncs
             .mapValues(_.maxBy(_._2(0).toString)) // 取出单个用户最大时间的那条记录 Map[String, (String, Row)]
             .map(line => {
             val row = line._2._2
-            val phoneNo = row(1).toString
+            val phone_no = row(1).toString
             val lac = row(3).toString
             val cell = row(4).toString
-            (phoneNo, lac + "-" + cell)
+            (phone_no, lac + "-" + cell)
           }).toList
 
           // 用户此刻所在基站信息（剔重）
           val distinctRow = userLastStayList.map(_._1).toSet
 
-          // 景区码表  基站ID，ScenicInfo(景区ID，景区名称,地市,景点人数上限阈值)
+          //            景区码表  基站ID，scenicInfo(景区ID，景区名称,地市,景点人数上限阈值)
           val valueOfSelectLacCi: collection.Map[String, ScenicInfo] = selectLacCi.value
 
           // 景区ID，scenicInfo(景区ID，景区名称,地市,景点人数上限阈值)
@@ -170,26 +168,26 @@ object TourScenicAreaUsrInfoFromIntegrationTopic extends TimeFuncs
             (sceneryId, kv._2)
           })
 
-          // 本批次迁入表(景区,迁入数量)
+          //        本批次迁入表(景区,迁入数量)
           val userCheckIn: mutable.HashMap[(String, ScenicInfo), Int] = new scala.collection.mutable.HashMap
-          // 本批次迁出表(景区,迁出数量)
+          //        本批次迁出表(景区,迁出数量)
           val userCheckOut: mutable.HashMap[(String, ScenicInfo), Int] = new scala.collection.mutable.HashMap
-          // 景区本批次 总数
+          //  景区本批次 总数
           val userCheckAll: mutable.HashMap[(String, ScenicInfo), (Int, Int, Int)] = new scala.collection.mutable.HashMap
 
           // 迁入  迁出 初始化
           scenicOfSelectLacCi.foreach((s: (String, ScenicInfo)) => {
             userCheckIn.update(s, 0)
             userCheckOut.update(s, 0)
-            // userCheckAll.update(s, (0, 0, 0))
+            //            userCheckAll.update(s, (0, 0, 0))
           })
 
-          // 用户进出景区记录列表(号码，景区，进出标志（1进0出），记录时间)
+          //          用户进出景区记录列表(号码，景区，进出标志（1进0出），记录时间)
           var inAndOutRecord: List[(String, String, Int, Long)] = List()
 
           //   返回     (用户,当前景区)
           val tmpUserLocationMap: mutable.HashMap[String, String] =
-            getTourUserSceneryId(hbaseUtilBroadcastExecutor, hbaseUtilConnExecutor, "b_yz_app_td_hbase:TourHistory", distinctRow)
+            getTourUserSceneryId(hbaseUtilExecutor, hbaseUtilConnExecutor, "b_yz_app_td_hbase:TourHistory", distinctRow)
 
           //       phone_no，（start_time, phone_no, imei, lac, cell, up_flow, down_flow, data_type, start_time_long）
           partitionRow.foreach((line: (String, Row)) => {
@@ -251,8 +249,8 @@ object TourScenicAreaUsrInfoFromIntegrationTopic extends TimeFuncs
                   kafkaProducer.value.send(TARGET_TOPIC, in)
                 }
               }
-              // 如果此人不在景区
-              // 用户离开景区,当前不在景区
+              //              如果此人不在景区
+              //                用户离开景区,当前不在景区
               else {
                 tmpUserLocationMap.update(phoneNo, "X")
                 // 如果用户这次不在景区，上次在某个景区，表示离开了上一次景区
@@ -270,13 +268,13 @@ object TourScenicAreaUsrInfoFromIntegrationTopic extends TimeFuncs
             }
             else {
               // 表示该人首次进入景区
-              // 如果在上个批次的全量表与临时表都找不到此人
-              // 如果此人此次进入景区
+              //              //            如果在上个批次的全量表与临时表都找不到此人
+              //              //              如果此人此次进入景区
               if (valueOfSelectLacCi.contains(lacCi)) { //判断此人的基站是在景区里面
                 val sceneryFromSelectLacCi = valueOfSelectLacCi(lacCi).sceneryId
                 tmpUserLocationMap.update(phoneNo, sceneryFromSelectLacCi)
-                // 拼接结果
-                // 业务流程开始时间，手机号，imei,lac,cell,上行流量，下行流量，进出景区标志（1进入，0离开），数据类型
+                //            拼接结果
+                //    业务流程开始时间，手机号，imei,lac,cell,上行流量，下行流量，进出景区标志（1进入，0离开），数据类型
                 val firstInOrOut = startTime + "," + f(1).toString.substring(2) + "," + f(2) +
                   "," + Long.toHexString(Long.parseLong(f(3).toString)) +
                   "," + Long.toHexString(Long.parseLong(f(4).toString)) +
@@ -293,10 +291,10 @@ object TourScenicAreaUsrInfoFromIntegrationTopic extends TimeFuncs
           )
 
           //b_yz_app_td_hbase:TourHistory 用户与景区对应关系实时表
-          hbaseUtilBroadcastExecutor.putByKeyColumnList(hbaseUtilConnExecutor, "b_yz_app_td_hbase:TourHistory", "0", "0", tmpUserLocationMap.toList)
+          hbaseUtilExecutor.putByKeyColumnList(hbaseUtilConnExecutor, "b_yz_app_td_hbase:TourHistory", "0", "0", tmpUserLocationMap.toList)
 
           // 维护用户最后所在基站信息（修复的时候使用） b_yz_app_td_hbase:UserLastStay	用户最后驻留基站位置实时表
-          hbaseUtilBroadcastExecutor.putByKeyColumnList(hbaseUtilConnExecutor, "b_yz_app_td_hbase:UserLastStay", "0", "0", userLastStayList)
+          hbaseUtilExecutor.putByKeyColumnList(hbaseUtilConnExecutor, "b_yz_app_td_hbase:UserLastStay", "0", "0", userLastStayList)
           //        计算本分区内结果
           scenicOfSelectLacCi.foreach((pair: (String, ScenicInfo)) => {
             val checkInCount = userCheckIn(pair)
@@ -306,17 +304,20 @@ object TourScenicAreaUsrInfoFromIntegrationTopic extends TimeFuncs
             userCheckAll.update(pair, (sum, checkInCount, checkOutCount))
           })
 
+
           //          userCheckAll.foreach(println)
           if (hbaseUtilConnExecutor != null) hbaseUtilConnExecutor.close()
-          userCheckAll.iterator     //RDD[((String, ScenicInfo), (Int, Int, Int))]
-      })
-        .reduceByKey((x,y) =>(
+          userCheckAll.toIterator
+        })
+        .reduceByKey((x, y) => (
           x._1 + y._1,
           x._2 + y._2,
           x._3 + y._3
         ))
 
+
       println("driver start:" + nowDate)
+      //      var result = ""
 
       // spark执行过程时间的不确定性，这里操作为了前端展现，将时间进行等距。
       val currentTimeMillis = getCurrentTimeMillis
@@ -326,7 +327,6 @@ object TourScenicAreaUsrInfoFromIntegrationTopic extends TimeFuncs
       } else {
         lastSendTime = lastSendTime + 10000
       }
-
       val currentTime = timeMillsToDate(lastSendTime, format = "yyyy,MM,dd,HH,mm,ss")
       var sceneryCountList = List[(String, Int)]()
       //      本批次景区列表
@@ -344,67 +344,71 @@ object TourScenicAreaUsrInfoFromIntegrationTopic extends TimeFuncs
       //      val sceneryCountResult = hun.getResultByKeyList(driverConn, "SceneryCount", collectedUserCheckAllItr.map(_._1._1).toSet)
       //        .map(kv => (kv._1, if (kv._2.isEmpty) 0 else Bytes.toString(kv._2.getValue("0".getBytes(), "0".getBytes())).toInt))
 
-      val hbaseUtilBroadcastExecutor = hbaseUtilBroadcast.value
-      val hbaseUtilConnExecutor = hbaseUtilBroadcastExecutor.createHbaseConnection
+      userCheckAllItr.collect()
+        .foreach(kv => {
+          //        上批次驻留人数
+          val sceneryInfo: (String, ScenicInfo) = kv._1
+          val sceneryId = sceneryInfo._1 //景区ID
+          val city = sceneryInfo._2.city // 景区归属地市
+          val sceneryName = sceneryInfo._2.sceneryName //景区名称
+          val alarmValue = sceneryInfo._2.alarmValue //景区人数告警阈值
+          var alarmStatus = "正常" //状态
 
-      userCheckAllItr.collect().foreach(kv =>{
-        //        上批次驻留人数
-        val sceneryInfo: (String, ScenicInfo) = kv._1
-        val sceneryId = sceneryInfo._1 //景区ID
-        val city = sceneryInfo._2.city // 景区归属地市
-        val sceneryName = sceneryInfo._2.sceneryName //景区名称
-        val alarmValue = sceneryInfo._2.alarmValue //景区人数告警阈值
-        var alarmStatus = "正常" //状态
+          val values = kv._2
+          var scenerySum = values._1      //总数
+          val sceneryCheckInSum = values._2  //迁入总数
+          val sceneryCheckOutSum = values._3 //迁出总数
 
-        val values = kv._2
-        var scenerySum = values._1      //总数
-        val sceneryCheckInSum = values._2  //迁入总数
-        val sceneryCheckOutSum = values._3 //迁出总数
-
-        //          val countResult = sceneryCountResult(sceneryId)
-        val countResult = hbaseUtilBroadcastExecutor.getValuesByKeyColumn(hbaseUtilConnExecutor, "b_yz_app_td_hbase:SceneryCount", sceneryId, "0", "0")
-        //        如果在Hbase中找到了此景区
-        if (!countResult.isEmpty) {
-          //        本批次变动人数
-          scenerySum = try {
-            scenerySum + Bytes.toString(countResult.getValue("0".getBytes(), "0".getBytes())).toInt
+          //          val countResult = sceneryCountResult(sceneryId)
+          val countResult = hbaseUtilDriver.getValuesByKeyColumn(connDriver, "b_yz_app_td_hbase:SceneryCount", sceneryId, "0", "0")
+          //        如果在Hbase中找到了此景区
+          if (!countResult.isEmpty) {
+            //        本批次变动人数
+            scenerySum = try {
+              scenerySum + Bytes.toString(countResult.getValue("0".getBytes(), "0".getBytes())).toInt
+            }
+            catch {
+              case e => scenerySum
+            }
           }
-          catch {
-            case e => scenerySum
-          }
-        }
-        //          scenerySum = scenerySum + countResult
+          //          scenerySum = scenerySum + countResult
 
-        if (scenerySum < 0) scenerySum = 0
-        //        将景区人数插入List
-        sceneryCountList = (sceneryId, scenerySum) +: sceneryCountList
-        //          sceneryCountResult.update(sceneryId, scenerySum)
-        if (scenerySum > alarmValue.toInt) alarmStatus = "告警"
-        //          添加景区id到本批次景区列表
-        thisPieceSubkeySet.add(sceneryId)
+          if (scenerySum < 0) scenerySum = 0
+          //        将景区人数插入List
+          sceneryCountList = (sceneryId, scenerySum) +: sceneryCountList
+          //          sceneryCountResult.update(sceneryId, scenerySum)
+          if (scenerySum > alarmValue.toInt) alarmStatus = "告警"
+          //          添加景区id到本批次景区列表
+          thisPieceSubkeySet.add(sceneryId)
 
-        val jsonObject1 = new JSONObject()
-        jsonObject1.put("calDate", currentTime)
-        jsonObject1.put("peopleNum", scenerySum)
-        jsonObject1.put("moveInNum", sceneryCheckInSum)
-        jsonObject1.put("moveOutNum", sceneryCheckOutSum)
+          val jsonObject1 = new JSONObject()
+          jsonObject1.put("calDate", currentTime)
+          jsonObject1.put("peopleNum", scenerySum)
+          jsonObject1.put("moveInNum", sceneryCheckInSum)
+          jsonObject1.put("moveOutNum", sceneryCheckOutSum)
 
-        resultList = ("td:travel:realtime:day:" + sceneryId, currentTime, jsonObject1.toJSONString) +: resultList
+          resultList = ("td:travel:realtime:day:" + sceneryId, currentTime, jsonObject1.toJSONString) +: resultList
 
-        //          jsonObject1.put("sceneryId", sceneryId)
-        //          jsonObject1.put("currentTime", currentTime)
-        //          publishDayJasonArray.add(jsonObject1)
+          //          jsonObject1.put("sceneryId", sceneryId)
+          //          jsonObject1.put("currentTime", currentTime)
 
-        val jsonObject2 = new JSONObject()
-        jsonObject2.put("peopleNum", scenerySum)
-        jsonObject2.put("placeId", sceneryId)
-        jsonObject2.put("moveInNum", sceneryCheckInSum)
-        jsonObject2.put("moveOutNum", sceneryCheckOutSum)
-        jsonObject2.put("placeName", sceneryName)
-        jsonObject2.put("status", alarmStatus)
+          //          publishDayJasonArray.add(jsonObject1)
 
-        resultList = ("td:travel:realtime:current:" + city, sceneryId, jsonObject2.toJSONString) +: resultList
-      })
+          val jsonObject2 = new JSONObject()
+          jsonObject2.put("peopleNum", scenerySum)
+          jsonObject2.put("placeId", sceneryId)
+          jsonObject2.put("moveInNum", sceneryCheckInSum)
+          jsonObject2.put("moveOutNum", sceneryCheckOutSum)
+          jsonObject2.put("placeName", sceneryName)
+          jsonObject2.put("status", alarmStatus)
+
+          resultList = ("td:travel:realtime:current:" + city, sceneryId, jsonObject2.toJSONString) +: resultList
+
+          //          jsonObject2.put("city", city)
+          //          jsonObject2.put("sceneryId", sceneryId)
+
+          //          publishCurrentJasonArray.add(jsonObject2)
+        })
 
       val TD_TRAVEL_SCENERY_ID_SET = travelSceneryMap.map(_._1).toSet
 
@@ -424,17 +428,21 @@ object TourScenicAreaUsrInfoFromIntegrationTopic extends TimeFuncs
       }
 
       // 景区实时人数表
-      hbaseUtilBroadcastExecutor.putByKeyColumnListInt(hbaseUtilConnExecutor, "b_yz_app_td_hbase:SceneryCount", sceneryCountList)
+      hbaseUtilDriver.putByKeyColumnListInt(connDriver, "b_yz_app_td_hbase:SceneryCount", sceneryCountList)
+
 
       setRedisResultList(jedisDmz, resultList)
       //      pubRedisResult(jedisDmz, "td:travel:realtime:day:channel", publishDayJasonArray.toJSONString)
       //      pubRedisResult(jedisDmz, "td:travel:realtime:current:channel", publishCurrentJasonArray.toJSONString)
       println("driver end:" + nowDate)
+      if(connDriver != null) connDriver.close()
     })
+
 
     ssc.start()
     ssc.awaitTermination()
     ssc.stop()
-  }
 
+
+  }
 }
