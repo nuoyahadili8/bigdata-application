@@ -28,8 +28,9 @@ trait TeradataConnect {
     classOf[com.teradata.jdbc.TeraDriver]
     DriverManager.getConnection(QD_CONNSTR, QD_USERNAME, QD_PASSWORD)
   }
+
   def interface177Connect(): Connection ={
-    val interface177="jdbc:teradata://10.221.158.177/DBS_PORT=8762,TMODE=TERA,CHARSET=ASCII,CLIENT_CHARSET=GBK,LOB_SUPPORT=off,DATABASE=dbc"
+    val interface177 ="jdbc:teradata://10.221.158.177/DBS_PORT=8762,TMODE=TERA,CHARSET=ASCII,CLIENT_CHARSET=GBK,LOB_SUPPORT=off,DATABASE=dbc"
     val qd_userName = "bakarc"
     val qd_passWord = "bakarc"
     classOf[com.teradata.jdbc.TeraDriver]

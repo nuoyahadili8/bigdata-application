@@ -311,6 +311,7 @@ object IntelligentSMSApplication extends TimeFuncs with Serializable {
         val xiwuzhumuqinqigonganjiaojing = xiwuzhumuqinqiAreaList.xiwuzhumuqinqigonganjiaojing
         val taiqisijinchukou = taiqiAreaList.taiqisijinchukou
         val tuyouqiwaiquan = tuyouqiAreaList.tuyouqiwaiquan
+        val tuyouqiPhoneNo = tuyouqiAreaList.tuyouqiPhoneNo
         val hangjinqiqixinghu = hangjinqiAreaList.hangjinqiqixinghu
         val zhalaitenongchanyeyuan = zhalaiteAreaList.zhalaitenongchanyeyuan
         val siziwangqigongan = siziwangqigonganListArea.siziwangqigongan
@@ -526,7 +527,7 @@ object IntelligentSMSApplication extends TimeFuncs with Serializable {
             //            锡盟太旗文体旅游局138
             if (taiqisijinchukou.contains(lac_ci)) send(138)
             //            土默特右旗文化旅游广电局139
-            if (tuyouqiwaiquan.contains(lac_ci)) send(139)
+            if (tuyouqiwaiquan.contains(lac_ci) && tuyouqiPhoneNo.contains(phone_no)) send(139)
             //              杭锦旗气象局140
             if (hangjinqiqixinghu.contains(lac_ci)) send(140)
             //            乌兰察布市四子王旗公安局信息平台 144
