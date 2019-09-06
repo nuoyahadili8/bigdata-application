@@ -48,6 +48,7 @@ object TourScenicAreaUsrInfoFromIntegrationTopic extends TimeFuncs
     val kafkaProperties = new KafkaProperties()
     val sparkConfig = new SparkConfig
     val conf = sparkConfig.getConf.setAppName(classNameStr)
+    conf.set("spark.streaming.kafka.consumer.poll.ms", "60000")
     val ssc = new StreamingContext(conf, Seconds(20))
     val topics = Array(kafkaProperties.integrationTopic)
     val brokers = kafkaProperties.kafkaBrokers.mkString(",")
@@ -71,8 +72,9 @@ object TourScenicAreaUsrInfoFromIntegrationTopic extends TimeFuncs
       , ConsumerStrategies.Subscribe[String, String](topics, kafkaParams)
     )
 
-    val hbaseUtilDriver = new HbaseUtil
-    val connDriver = hbaseUtilDriver.createHbaseConnection
+    val hbaseUtil = new HbaseUtil
+    val hbaseUtilBroadcast = ssc.sparkContext.broadcast(hbaseUtil)
+//    val connDriver = hbaseUtilDriver.createHbaseConnection
 
     val jedisDmz = getDmzRedisConnect
     jedisDmz.auth("nmtour")
@@ -134,8 +136,8 @@ object TourScenicAreaUsrInfoFromIntegrationTopic extends TimeFuncs
       val userCheckAllItr: RDD[((String, ScenicInfo), (Int, Int, Int))] = rdd
         .partitionBy(new HashPartitioner(300))
         .mapPartitions(partition =>{
-          val hbaseUtilExecutor: HbaseUtil = new HbaseUtil
-          val hbaseUtilConnExecutor = hbaseUtilExecutor.createHbaseConnection
+          val hbaseUtilBroadcastExecutor = hbaseUtilBroadcast.value
+          val hbaseUtilConnExecutor = hbaseUtilBroadcastExecutor.createHbaseConnection
 
           //异常用户
           val abnormalUser: Set[String] = abnormalUserBro.value
@@ -187,7 +189,7 @@ object TourScenicAreaUsrInfoFromIntegrationTopic extends TimeFuncs
 
           //   返回     (用户,当前景区)
           val tmpUserLocationMap: mutable.HashMap[String, String] =
-            getTourUserSceneryId(hbaseUtilExecutor, hbaseUtilConnExecutor, "b_yz_app_td_hbase:TourHistory", distinctRow)
+            getTourUserSceneryId(hbaseUtilBroadcastExecutor, hbaseUtilConnExecutor, "b_yz_app_td_hbase:TourHistory", distinctRow)
 
           //       phone_no，（start_time, phone_no, imei, lac, cell, up_flow, down_flow, data_type, start_time_long）
           partitionRow.foreach((line: (String, Row)) => {
@@ -291,10 +293,10 @@ object TourScenicAreaUsrInfoFromIntegrationTopic extends TimeFuncs
           )
 
           //b_yz_app_td_hbase:TourHistory 用户与景区对应关系实时表
-          hbaseUtilExecutor.putByKeyColumnList(hbaseUtilConnExecutor, "b_yz_app_td_hbase:TourHistory", "0", "0", tmpUserLocationMap.toList)
+          hbaseUtilBroadcastExecutor.putByKeyColumnList(hbaseUtilConnExecutor, "b_yz_app_td_hbase:TourHistory", "0", "0", tmpUserLocationMap.toList)
 
           // 维护用户最后所在基站信息（修复的时候使用） b_yz_app_td_hbase:UserLastStay	用户最后驻留基站位置实时表
-          hbaseUtilExecutor.putByKeyColumnList(hbaseUtilConnExecutor, "b_yz_app_td_hbase:UserLastStay", "0", "0", userLastStayList)
+          hbaseUtilBroadcastExecutor.putByKeyColumnList(hbaseUtilConnExecutor, "b_yz_app_td_hbase:UserLastStay", "0", "0", userLastStayList)
           //        计算本分区内结果
           scenicOfSelectLacCi.foreach((pair: (String, ScenicInfo)) => {
             val checkInCount = userCheckIn(pair)
@@ -342,6 +344,9 @@ object TourScenicAreaUsrInfoFromIntegrationTopic extends TimeFuncs
       //      val sceneryCountResult = hun.getResultByKeyList(driverConn, "SceneryCount", collectedUserCheckAllItr.map(_._1._1).toSet)
       //        .map(kv => (kv._1, if (kv._2.isEmpty) 0 else Bytes.toString(kv._2.getValue("0".getBytes(), "0".getBytes())).toInt))
 
+      val hbaseUtilBroadcastExecutor = hbaseUtilBroadcast.value
+      val hbaseUtilConnExecutor = hbaseUtilBroadcastExecutor.createHbaseConnection
+
       userCheckAllItr.collect().foreach(kv =>{
         //        上批次驻留人数
         val sceneryInfo: (String, ScenicInfo) = kv._1
@@ -357,7 +362,7 @@ object TourScenicAreaUsrInfoFromIntegrationTopic extends TimeFuncs
         val sceneryCheckOutSum = values._3 //迁出总数
 
         //          val countResult = sceneryCountResult(sceneryId)
-        val countResult = hbaseUtilDriver.getValuesByKeyColumn(connDriver, "b_yz_app_td_hbase:SceneryCount", sceneryId, "0", "0")
+        val countResult = hbaseUtilBroadcastExecutor.getValuesByKeyColumn(hbaseUtilConnExecutor, "b_yz_app_td_hbase:SceneryCount", sceneryId, "0", "0")
         //        如果在Hbase中找到了此景区
         if (!countResult.isEmpty) {
           //        本批次变动人数
@@ -419,8 +424,7 @@ object TourScenicAreaUsrInfoFromIntegrationTopic extends TimeFuncs
       }
 
       // 景区实时人数表
-      hbaseUtilDriver.putByKeyColumnListInt(connDriver, "b_yz_app_td_hbase:SceneryCount", sceneryCountList)
-
+      hbaseUtilBroadcastExecutor.putByKeyColumnListInt(hbaseUtilConnExecutor, "b_yz_app_td_hbase:SceneryCount", sceneryCountList)
 
       setRedisResultList(jedisDmz, resultList)
       //      pubRedisResult(jedisDmz, "td:travel:realtime:day:channel", publishDayJasonArray.toJSONString)

@@ -102,7 +102,7 @@ object IntelligentSMSApplicationAuto extends TimeFuncs with Serializable with Yu
         //hbase
         val hbaseUtilBroadcastExecutor = hbaseUtilBroadcast.value
         val hbaseConnection = hbaseUtilBroadcastExecutor.createHbaseConnection
-        val targetTopic = "YZ_TD_YUNMAS_ALL"
+        val targetTopic = "YZ_TD_YUNMAS_NEW"
 
         var partitionPhoneNos: Set[String] = Set()
         var userData: List[(String, ((String, Long), String, String, String, String, String, String, String))] = List()
