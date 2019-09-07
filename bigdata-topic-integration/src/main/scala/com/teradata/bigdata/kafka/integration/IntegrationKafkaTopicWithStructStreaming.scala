@@ -82,7 +82,7 @@ object IntegrationKafkaTopicWithStructStreaming extends TimeFuncs {
                 val startTime = startTimeSSS.substring(0, 19)
                 val phoneNo = arr(11).replaceAll("^86", "")
                 var phoneNoPartition = ""
-                if (!StrUtil.isEmpty(phoneNo) && phoneNo.length > 2) {
+                if (phoneNo.nonEmpty) {
                   phoneNoPartition = phoneNo.substring(phoneNo.length - 2, phoneNo.length) + phoneNo
                 }
                 val dataType = "S1-MME"
@@ -112,7 +112,7 @@ object IntegrationKafkaTopicWithStructStreaming extends TimeFuncs {
               val imei = arr(22)
               val phoneNo = arr(18).replaceAll("^86", "")
               var phoneNoPartition = ""
-              if (!StrUtil.isEmpty(phoneNo) && phoneNo.length > 2) {
+              if (phoneNo.nonEmpty) {
                 phoneNoPartition = phoneNo.substring(phoneNo.length - 2, phoneNo.length) + phoneNo
               }
               val endTime = arr(1)

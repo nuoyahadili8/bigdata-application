@@ -76,7 +76,7 @@ object IntelligentSMSApplicationWithStayDuration extends TimeFuncs with Serializ
     kafkaStreams.map(m =>{
       m.value().split(",", -1)
     }).filter((f: Array[String]) => {
-      if (f.length >= 25 && !StrUtil.isEmpty(f(7)) && f(7).length > 2) {
+      if (f.length >= 25 && f(7).nonEmpty) {
         true
       } else{
         false
