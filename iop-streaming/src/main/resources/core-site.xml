@@ -1,0 +1,298 @@
+  <configuration>
+    
+    <property>
+      <name>fs.defaultFS</name>
+      <value>hdfs://nmsq</value>
+    </property>
+    
+    <property>
+      <name>fs.trash.interval</name>
+      <value>360</value>
+    </property>
+    
+    <property>
+      <name>ha.failover-controller.active-standby-elector.zk.op.retries</name>
+      <value>120</value>
+    </property>
+    
+    <property>
+      <name>ha.failover-controller.new-active.rpc-timeout.ms</name>
+      <value>100000</value>
+    </property>
+    
+    <property>
+      <name>ha.health-monitor.rpc-timeout.ms</name>
+      <value>120000</value>
+    </property>
+    
+    <property>
+      <name>ha.zookeeper.quorum</name>
+      <value>ss-b02-m12-a01-r5300-1:2181,ss-b02-m12-a01-r5300-3:2181,ss-b02-m12-a01-r5300-4:2181,ss-b02-m12-a01-r5300-5:2181,ss-b02-m12-a01-r5300-6:2181</value>
+    </property>
+    
+    <property>
+      <name>ha.zookeeper.session-timeout.ms</name>
+      <value>60000</value>
+    </property>
+    
+    <property>
+      <name>hadoop.http.authentication.signature.secret.file</name>
+      <value>/etc/security/hadoop/hadoop-http-auth-signature-secret</value>
+    </property>
+    
+    <property>
+      <name>hadoop.http.authentication.simple.anonymous.allowed</name>
+      <value>false</value>
+    </property>
+    
+    <property>
+      <name>hadoop.http.authentication.type</name>
+      <value>simple</value>
+    </property>
+    
+    <property>
+      <name>hadoop.http.filter.initializers</name>
+      <value>org.apache.hadoop.security.AuthenticationFilterInitializer</value>
+    </property>
+    
+    <property>
+      <name>hadoop.http.staticuser.user</name>
+      <value>yarn</value>
+    </property>
+    
+    <property>
+      <name>hadoop.proxyuser.bdoc.groups</name>
+      <value>*</value>
+    </property>
+    
+    <property>
+      <name>hadoop.proxyuser.bdoc.hosts</name>
+      <value>*</value>
+    </property>
+    
+    <property>
+      <name>hadoop.proxyuser.bdoc.users</name>
+      <value>*</value>
+    </property>
+    
+    <property>
+      <name>hadoop.proxyuser.hcat.groups</name>
+      <value>*</value>
+    </property>
+    
+    <property>
+      <name>hadoop.proxyuser.hcat.hosts</name>
+      <value>*</value>
+    </property>
+    
+    <property>
+      <name>hadoop.proxyuser.hcat.users</name>
+      <value>*</value>
+    </property>
+    
+    <property>
+      <name>hadoop.proxyuser.hdfs.groups</name>
+      <value>*</value>
+    </property>
+    
+    <property>
+      <name>hadoop.proxyuser.hive.groups</name>
+      <value>*</value>
+    </property>
+    
+    <property>
+      <name>hadoop.proxyuser.hive.hosts</name>
+      <value>*</value>
+    </property>
+    
+    <property>
+      <name>hadoop.proxyuser.hive.users</name>
+      <value>*</value>
+    </property>
+    
+    <property>
+      <name>hadoop.proxyuser.root.groups</name>
+      <value>*</value>
+    </property>
+    
+    <property>
+      <name>hadoop.proxyuser.root.hosts</name>
+      <value>SS-B02-M12-A01-RH2288HV3-7</value>
+    </property>
+    
+    <property>
+      <name>hadoop.proxyuser.yarn.groups</name>
+      <value>*</value>
+    </property>
+    
+    <property>
+      <name>hadoop.proxyuser.yarn.hosts</name>
+      <value>*</value>
+    </property>
+    
+    <property>
+      <name>hadoop.security.auth_to_local</name>
+      <value>DEFAULT</value>
+    </property>
+    
+    <property>
+      <name>hadoop.security.authentication</name>
+      <value>simple</value>
+    </property>
+    
+    <property>
+      <name>hadoop.security.authorization</name>
+      <value>true</value>
+    </property>
+    
+    <property>
+      <name>hadoop.security.bdoc.access.id</name>
+      <value>5754f80986433f4cb8de</value>
+    </property>
+    
+    <property>
+      <name>hadoop.security.bdoc.access.key</name>
+      <value>d76256523eb684f3f814</value>
+    </property>
+    
+    <property>
+      <name>hadoop.security.enable.bdoc.authentication</name>
+      <value>true</value>
+    </property>
+    
+    <property>
+      <name>hadoop.security.group.mapping</name>
+      <value>org.apache.hadoop.security.LdapGroupsMapping</value>
+    </property>
+    
+    <property>
+      <name>hadoop.security.group.mapping.ldap.base</name>
+      <value>dc=hadoop,dc=apache,dc=org</value>
+    </property>
+    
+    <property>
+      <name>hadoop.security.group.mapping.ldap.bind.password</name>
+      <value>E@8jwWj5_e</value>
+    </property>
+    
+    <property>
+      <name>hadoop.security.group.mapping.ldap.bind.user</name>
+      <value>cn=Manager,dc=hadoop,dc=apache,dc=org</value>
+    </property>
+    
+    <property>
+      <name>hadoop.security.group.mapping.ldap.search.attr.group.name</name>
+      <value>cn</value>
+    </property>
+    
+    <property>
+      <name>hadoop.security.group.mapping.ldap.search.attr.member</name>
+      <value>member</value>
+    </property>
+    
+    <property>
+      <name>hadoop.security.group.mapping.ldap.search.filter.group</name>
+      <value>(objectclass=groupOfNames)</value>
+    </property>
+    
+    <property>
+      <name>hadoop.security.group.mapping.ldap.search.filter.user</name>
+      <value>(&amp;(objectclass=person)(cn={0}))</value>
+    </property>
+    
+    <property>
+      <name>hadoop.security.group.mapping.ldap.url</name>
+      <value>ldap://10.221.209.250:390</value>
+    </property>
+    
+    <property>
+      <name>hadoop.security.loose.bdoc.authentication</name>
+      <value>false</value>
+    </property>
+    
+    <property>
+      <name>hadoop.ssl.client.conf</name>
+      <value>ssl-client.xml</value>
+    </property>
+    
+    <property>
+      <name>hadoop.ssl.hostname.verifier</name>
+      <value>DEFAULT</value>
+    </property>
+    
+    <property>
+      <name>hadoop.ssl.keystores.factory.class</name>
+      <value>org.apache.hadoop.security.ssl.FileBasedKeyStoresFactory</value>
+    </property>
+    
+    <property>
+      <name>hadoop.ssl.require.client.cert</name>
+      <value>false</value>
+    </property>
+    
+    <property>
+      <name>hadoop.ssl.server.conf</name>
+      <value>ssl-server.xml</value>
+    </property>
+    
+    <property>
+      <name>io.compression.codecs</name>
+      <value>org.apache.hadoop.io.compress.GzipCodec,org.apache.hadoop.io.compress.DefaultCodec,org.apache.hadoop.io.compress.SnappyCodec</value>
+    </property>
+    
+    <property>
+      <name>io.file.buffer.size</name>
+      <value>131072</value>
+    </property>
+    
+    <property>
+      <name>io.serializations</name>
+      <value>org.apache.hadoop.io.serializer.WritableSerialization</value>
+    </property>
+    
+    <property>
+      <name>ipc.client.connect.max.retries</name>
+      <value>50</value>
+    </property>
+    
+    <property>
+      <name>ipc.client.connection.maxidletime</name>
+      <value>30000</value>
+    </property>
+    
+    <property>
+      <name>ipc.client.idlethreshold</name>
+      <value>8000</value>
+    </property>
+    
+    <property>
+      <name>ipc.ping.interval</name>
+      <value>180000</value>
+    </property>
+    
+    <property>
+      <name>ipc.server.listen.queue.size</name>
+      <value>16000</value>
+    </property>
+    
+    <property>
+      <name>ipc.server.tcpnodelay</name>
+      <value>true</value>
+    </property>
+    
+    <property>
+      <name>mapreduce.jobtracker.webinterface.trusted</name>
+      <value>false</value>
+    </property>
+    
+    <property>
+      <name>net.topology.script.file.name</name>
+      <value>/etc/hadoop/conf/topology_script.py</value>
+    </property>
+    
+    <property>
+      <name>topology.data</name>
+      <value></value>
+    </property>
+    
+  </configuration>
