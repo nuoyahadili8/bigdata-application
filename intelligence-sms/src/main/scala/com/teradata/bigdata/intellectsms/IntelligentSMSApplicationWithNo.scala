@@ -26,13 +26,13 @@ import org.apache.spark.streaming.{Seconds, StreamingContext}
   * @Copyright ©2018-2019 al.github
   * @Modified By:
   */
-object IntelligentSMSApplication extends TimeFuncs with Serializable {
+object IntelligentSMSApplicationWithNo extends TimeFuncs with Serializable {
 
   var lastTime = Calendar.getInstance().getTime
   var publicSecurityLastTime = Calendar.getInstance().getTime
   val timeFreq: Long = 300000L
   val publicSecurityTimeFreq: Long = timeFreq
-  val classNameStr = "IntelligentSMSApplication"
+  val classNameStr = "IntelligentSMSApplicationWithNo"
 
   def main(args: Array[String]): Unit = {
     val sparkConfig = new SparkConfig
@@ -110,7 +110,7 @@ object IntelligentSMSApplication extends TimeFuncs with Serializable {
         // 从广播变量中获取公安的用户列表（监控人群，内容全是手机号）
         val publicSecurityCustSet: Set[String] = publicSecurityCustSetBro.value
         // 目标topic
-        val targetTopic = "YZ_TD_YUNMAS_ALL"
+        val targetTopic = "YZ_TD_YUNMAS"
 
         val area = new AreaList
         val xinganmengArea = new XinganmengAreaList

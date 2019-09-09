@@ -86,7 +86,7 @@ object IntelligentSMSApplicationWithStayDuration extends TimeFuncs with Serializ
       (m(7),((m(11),m(9).toLong) ,m(7)  ,m(1)     ,m(4)        ,m(2)   ,m(3)     ,m(19) ,m(20)))
     }).foreachRDD(rdd =>{
       rdd.partitionBy(new HashPartitioner(200)).foreachPartition(partition =>{
-        val targetTopic = "YZ_TD_YUNMAS_ALL"
+        val targetTopic = "YZ_TD_YUNMAS"
 
         val area = new AreaList
         val eerduosiArea = new EerduosiAreaList
@@ -455,5 +455,8 @@ object IntelligentSMSApplicationWithStayDuration extends TimeFuncs with Serializ
       })
     })
 
+    ssc.start()
+    ssc.awaitTermination()
+    ssc.stop()
   }
 }
