@@ -93,7 +93,7 @@ object SendWelcomeToSwitchPhone extends TimeFuncs
     kafkaStreams.map(m =>{
       m.value().split(",", -1)
     }).filter((f: Array[String]) => {
-      if (f.length == 25 && f(23).equals("S1-MME") && f(7).nonEmpty) {
+      if (f.length >= 25 && f(23).equals("S1-MME") && f(7).nonEmpty) {
         true
       } else{
         false
