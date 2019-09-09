@@ -3,12 +3,15 @@ package com.teradata.bigdata.kafka.integration
 import com.teradata.bigdata.util.kafka.KafkaProperties
 import com.teradata.bigdata.util.spark.SparkConfig
 import com.teradata.bigdata.util.tools.TimeFuncs
-import com.xiaoleilu.hutool.util.StrUtil
 import org.apache.spark.sql.{DataFrame, Row, SparkSession}
 
 /**
   * @Project:
-  * @Description: 将kafka的O_DPI_LTE_MME,O_DPI_MC_LOCATIONUPDATE_2G,O_DPI_MC_LOCATIONUPDATE_3G整合到Topic【YZ_APP_TD_234G_DPI_DATA】
+  * @Description: 将kafka的Topic:
+  *              O_DPI_LTE_MME,
+  *              O_DPI_MC_LOCATIONUPDATE_2G,
+  *              O_DPI_MC_LOCATIONUPDATE_3G
+  *              整合到Topic【YZ_APP_TD_234G_DPI_DATA】
   * @Version 1.0.0
   * @Throws SystemException:
   * @Author: <li>2019/8/26/026 Administrator Create 1.0
@@ -26,10 +29,13 @@ object IntegrationKafkaTopicWithStructStreaming extends TimeFuncs {
 
     val targetTopic = kafkaProperties.integrationTopic
 
+    val classNameStr = "IntegrationKafkaTopicWithStructStreaming"
+
     val spark: SparkSession = SparkSession
       .builder()
       .config((new SparkConfig).getConf)
-      .appName("IntegrationKafkaTopicWithStructStreaming")
+      .config("spark.sql.streaming.checkpointLocation", "/user/b_yz_app_td/checkpoint/StructStreamingIntegrationTopic")
+      .appName(classNameStr)
       .getOrCreate()
 
     val lines: DataFrame = spark

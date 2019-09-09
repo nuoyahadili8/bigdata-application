@@ -103,7 +103,7 @@ object SendWelcomeToSelectPhone extends TimeFuncs
     kafkaStreams.map(m =>{
       m.value().split(",", -1)
     }).filter((f: Array[String]) => {
-      if (f.length == 25) {
+      if (f.length >= 25) {
         true
       } else{
         false

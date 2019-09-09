@@ -5,16 +5,15 @@ import java.util.{Calendar, Properties}
 
 import com.alibaba.fastjson.JSONObject
 import com.teradata.bigdata.tour.bean.ScenicInfo
-import com.teradata.bigdata.tour.conf.SparkConfig
 import com.teradata.bigdata.tour.utils.TourFuncs
 import com.teradata.bigdata.util.hbase.HbaseUtil
 import com.teradata.bigdata.util.kafka.{KafkaProperties, KafkaSink}
-import com.teradata.bigdata.util.spark.BroadcastWrapper
+import com.teradata.bigdata.util.spark.{BroadcastWrapper, SparkConfig}
 import com.teradata.bigdata.util.teradata.TeradataConnect
 import com.teradata.bigdata.util.tools.TimeFuncs
 import org.apache.hadoop.hbase.util.Bytes
 import org.apache.kafka.clients.consumer.{ConsumerConfig, ConsumerRecord}
-import org.apache.kafka.common.serialization.StringSerializer
+import org.apache.kafka.common.serialization.{StringDeserializer, StringSerializer}
 import org.apache.spark.HashPartitioner
 import org.apache.spark.broadcast.Broadcast
 import org.apache.spark.rdd.RDD
@@ -25,10 +24,9 @@ import org.apache.spark.streaming.{Seconds, StreamingContext}
 
 import scala.collection.mutable
 
-
 /**
   * @Project:
-  * @Description:  旅游应用从整合topic【YZ_APP_TD_234G_DPI_DATA】获取信息并计算
+  * @Description: 旅游应用从整合topic【YZ_APP_TD_234G_DPI_DATA】获取信息并计算
   * @Version 1.0.0
   * @Throws SystemException:
   * @Author: <li>2019/9/2/002 Administrator Create 1.0
@@ -50,7 +48,9 @@ object TourScenicAreaUsrInfoFromIntegrationTopic
   def main(args: Array[String]) {
     val kafkaProperties = new KafkaProperties
     val sparkConfig = new SparkConfig
-    val conf = sparkConfig.getConf.setAppName("TourScenicAreaUsrInfoFromIntegrationTopic")
+    val conf = sparkConfig.getConf
+      .set("spark.streaming.kafka.consumer.poll.ms", "60000")
+      .setAppName(classNameStr)
     val ssc = new StreamingContext(conf, Seconds(20))
     val topics = Array(kafkaProperties.integrationTopic)
     val brokers = kafkaProperties.kafkaBrokers.mkString(",")
@@ -62,8 +62,8 @@ object TourScenicAreaUsrInfoFromIntegrationTopic
     val kafkaParams = Map[String, String](
       ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG -> brokers,
       ConsumerConfig.GROUP_ID_CONFIG -> groupId,
-      ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG -> "org.apache.kafka.common.serialization.StringDeserializer",
-      ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG -> "org.apache.kafka.common.serialization.StringDeserializer",
+      ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG -> classOf[StringDeserializer].getName,
+      ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG -> classOf[StringDeserializer].getName,
       ConsumerConfig.AUTO_OFFSET_RESET_CONFIG -> "latest",
       ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG -> "false"
     )
@@ -86,7 +86,7 @@ object TourScenicAreaUsrInfoFromIntegrationTopic
 
     //    异常用户集合
     //    460022482991538,15248568038,161026,1
-    val abnormalUser =
+    val abNormalUser =
     ssc.sparkContext.textFile("hdfs://nmsq/user/b_yz_app_td/TB_TRAVAL_USER_STAYDURATION_MUL_DAY.txt")
       .map(_.split(",")(1))
       .filter(_.length >= 11)
@@ -94,8 +94,8 @@ object TourScenicAreaUsrInfoFromIntegrationTopic
       .collect().toSet
 
 
-    println("abnormalUser size:" + abnormalUser.size)
-    val abnormalUserBro = ssc.sparkContext.broadcast(abnormalUser)
+    println("abNormalUser size:" + abNormalUser.size)
+    val abNormalUserBro = ssc.sparkContext.broadcast(abNormalUser)
 
     // 景区的配置码表 lacCellId, scenicInfo(sceneryId, sceneryName, cityId, alarmValue)
     // 基站ID scenicInfo(景区ID，景区名称,地市,景点人数上限阈值)
@@ -124,33 +124,19 @@ object TourScenicAreaUsrInfoFromIntegrationTopic
       ssc.sparkContext.broadcast(KafkaSink[String, String](kafkaProducerConfig))
     }
 
-    kafkaStreams.map(m =>{
+    kafkaStreams.map(m => {
       m.value().split(",", -1)
     }).filter((f: Array[String]) => {
       if (f.length >= 25 && f(7).nonEmpty) {
         true
-      } else{
+      } else {
         false
       }
     }).map(m => {
       //手机号分区字段     业务流程开始时间  ,手机号 ,imei    ,lac     ,cell   ,上行流量  ,下行流量  ,数据类型
-      (m(24),Row(         m(11)          ,m(24)   ,m(6)    ,m(19)   ,m(20)  ,""       ,""       ,m(23)   ,m(9).toLong))
+      (m(24), Row(m(11), m(24), m(6), m(19), m(20), "", "", m(23), m(9).toLong))
     })
-
-
-    val filterStream = kafkaStreams.map(m =>{
-      m.value().split(",", -1)
-    }).filter((f: Array[String]) => {
-      if (f.length >= 25 && f(7).nonEmpty) {
-        true
-      } else{
-        false
-      }
-    }).map(m => {
-      //手机号分区字段     业务流程开始时间  ,手机号 ,imei    ,lac     ,cell   ,上行流量  ,下行流量  ,数据类型
-      (m(24),Row(         m(11)          ,m(24)   ,m(6)    ,m(19)   ,m(20)  ,""       ,""       ,m(23)   ,m(9).toLong))
-    })
-      .foreachRDD(rdd =>{
+      .foreachRDD(rdd => {
         updateBroadcast
         val userCheckAllItr: RDD[((String, ScenicInfo), (Int, Int, Int))] = rdd
           .partitionBy(new HashPartitioner(300))
@@ -158,10 +144,10 @@ object TourScenicAreaUsrInfoFromIntegrationTopic
             val hbaseUtilExecutor: HbaseUtil = new HbaseUtil
             val hbaseUtilConnExecutor = hbaseUtilExecutor.createHbaseConnection
             //异常用户
-            val abnormalUser: Set[String] = abnormalUserBro.value
+            val abnormalUser: Set[String] = abNormalUserBro.value
             val TARGET_TOPIC = "YZ_TD_NM_TOUR"
             val partitionRow: List[(String, Row)] = partition.toList
-              .filter(line => !abnormalUser.contains(line._1))   //排除异常用户
+              .filter(line => !abnormalUser.contains(line._1)) //排除异常用户
               // 根据start_time排序，防止顺序乱
               .sortBy(line => line._2(0).toString)
 
@@ -243,7 +229,7 @@ object TourScenicAreaUsrInfoFromIntegrationTopic
                 // 如果此人这次在景区的基站  valueOfSelectLacCi（景区码表）
                 if (valueOfSelectLacCi.contains(lacCi)) {
                   // 此人在哪个景区
-                  val sceneryFromSelectLacCi: String = valueOfSelectLacCi(lacCi).sceneryId    //valueOfSelectLacCi景区码表
+                  val sceneryFromSelectLacCi: String = valueOfSelectLacCi(lacCi).sceneryId //valueOfSelectLacCi景区码表
                   // 如果这次跟上次不是一个景区
                   // 7077!=7076 or X
                   if (!sceneryFromSelectLacCi.equals(lastScenery)) {
@@ -306,9 +292,7 @@ object TourScenicAreaUsrInfoFromIntegrationTopic
                   tmpUserLocationMap.update(phoneNo, "X")
                 }
               }
-
-            }
-            )
+            })
 
             //b_yz_app_td_hbase:TourHistory 用户与景区对应关系实时表
             hbaseUtilExecutor.putByKeyColumnList(hbaseUtilConnExecutor, "b_yz_app_td_hbase:TourHistory", "0", "0", tmpUserLocationMap.toList)
@@ -323,7 +307,6 @@ object TourScenicAreaUsrInfoFromIntegrationTopic
               // 景区Id，总数  迁入人数  迁出人数
               userCheckAll.update(pair, (sum, checkInCount, checkOutCount))
             })
-
 
             // userCheckAll.foreach(println)
             if (hbaseUtilConnExecutor != null) hbaseUtilConnExecutor.close()
@@ -374,8 +357,8 @@ object TourScenicAreaUsrInfoFromIntegrationTopic
             var alarmStatus = "正常" //状态
 
             val values = kv._2
-            var scenerySum = values._1      //总数
-            val sceneryCheckInSum = values._2  //迁入总数
+            var scenerySum = values._1 //总数
+            val sceneryCheckInSum = values._2 //迁入总数
             val sceneryCheckOutSum = values._3 //迁出总数
 
             // val countResult = sceneryCountResult(sceneryId)
@@ -454,7 +437,7 @@ object TourScenicAreaUsrInfoFromIntegrationTopic
         // pubRedisResult(jedisDmz, "td:travel:realtime:day:channel", publishDayJasonArray.toJSONString)
         // pubRedisResult(jedisDmz, "td:travel:realtime:current:channel", publishCurrentJasonArray.toJSONString)
         println("driver end:" + nowDate)
-//        if(connDriver != null) connDriver.close()
+        //        if(connDriver != null) connDriver.close()
       })
 
 

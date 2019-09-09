@@ -58,7 +58,7 @@ class SparkConfig {
       //      .set("spark.hadoop.hadoop.security.proxy.user", "sunjiafeng")
       .set("queue", "root.bdoc.b_yz_app_td_yarn")
       //      .set("spark.scheduler.mode","FAIR")
-      .set("spark.sql.streaming.checkpointLocation", "/user/b_yz_app_td/checkpoint/StructStreamingTest")
+//      .set("spark.sql.streaming.checkpointLocation", "/user/b_yz_app_td/checkpoint/StructStreamingTest")
   }
 
   def setConf(conf: RuntimeConfig): Unit = {

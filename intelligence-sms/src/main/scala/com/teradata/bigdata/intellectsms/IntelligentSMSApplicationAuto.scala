@@ -7,7 +7,6 @@ import com.teradata.bigdata.util.hbase.HbaseUtil
 import com.teradata.bigdata.util.kafka.{KafkaProperties, KafkaSink}
 import com.teradata.bigdata.util.spark.{BroadcastWrapper, SparkConfig}
 import com.teradata.bigdata.util.tools.TimeFuncs
-import com.xiaoleilu.hutool.util.StrUtil
 import org.apache.kafka.clients.consumer.ConsumerConfig
 import org.apache.kafka.common.serialization.{StringDeserializer, StringSerializer}
 import org.apache.spark.HashPartitioner
@@ -28,9 +27,7 @@ import scala.collection.mutable
   */
 object IntelligentSMSApplicationAuto extends TimeFuncs with Serializable with YunmasFunc{
   var lastTime = Calendar.getInstance().getTime
-  var gonganLastTime = Calendar.getInstance().getTime
   val timeFreq: Long = 300000L
-  val gonganTimeFreq: Long = timeFreq
   val classNameStr = "IntelligentSMSApplicationAuto"
 
   def main(args: Array[String]): Unit = {
@@ -56,7 +53,7 @@ object IntelligentSMSApplicationAuto extends TimeFuncs with Serializable with Yu
     )
 
     // 从gbase获取活动配置 pview.vw_cloudmas_rule_to_td  并广播
-    val yunmasActsBroadcast: BroadcastWrapper[mutable.HashMap[String, YunmasActInfo]] = BroadcastWrapper[mutable.HashMap[String, YunmasActInfo]](ssc, getYunmasActs)
+    val yunMasActsBroadcast: BroadcastWrapper[mutable.HashMap[String, YunmasActInfo]] = BroadcastWrapper[mutable.HashMap[String, YunmasActInfo]](ssc, getYunmasActs)
 
     def updateBroadcast() {
       //每隔5分钟更新广播变量
@@ -64,7 +61,7 @@ object IntelligentSMSApplicationAuto extends TimeFuncs with Serializable with Yu
       val diffTime = currTime.getTime - lastTime.getTime
       if (diffTime > timeFreq) {
         // 更新广播变量
-        yunmasActsBroadcast.update(getYunmasActs, blocking = true)
+        yunMasActsBroadcast.update(getYunmasActs, blocking = true)
         lastTime = toDate
       }
     }
@@ -98,7 +95,7 @@ object IntelligentSMSApplicationAuto extends TimeFuncs with Serializable with Yu
       rdd.partitionBy(new HashPartitioner(partitions = 200)).foreachPartition(partition =>{
         //  gbase获取活动配置 pview.vw_cloudmas_rule_to_td
         //    规则ID，（活动要求所在的城市,活动要求所在的基站,漫游类型,驻留时长）
-        val yunmasActs: mutable.Map[String, YunmasActInfo] = yunmasActsBroadcast.value
+        val yunmasActs: mutable.Map[String, YunmasActInfo] = yunMasActsBroadcast.value
         //hbase
         val hbaseUtilBroadcastExecutor = hbaseUtilBroadcast.value
         val hbaseConnection = hbaseUtilBroadcastExecutor.createHbaseConnection
