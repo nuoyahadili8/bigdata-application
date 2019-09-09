@@ -22,6 +22,8 @@ object Test {
 
     println(Test.getClass.getCanonicalName)
 
+    println("".length)
+
   }
 
 }

@@ -94,14 +94,14 @@ object IntelligentSMSApplication extends TimeFuncs with Serializable {
     kafkaStreams.map(m =>{
       m.value().split(",", -1)
     }).filter((f: Array[String]) => {
-      if (f.length >= 25 && f(7).nonEmpty) {
-       true
+      if (f.length >= 25 && f(7).length >= 11) {
+        true
       } else{
         false
       }
     }).map(m => {
       //     (业务流程开始时间)   ,手机号 ,所在地市 ,用户漫游类型 ,归属省 ,归属地市 ,lac   ,cell  ,流程类型编码
-      (m(7),((m(10),m(9).toLong),m(7)  ,m(1)    ,m(4)        ,m(2)  ,m(3)    ,m(19) ,m(20) ,m(8)))
+      (m(7),((m(11),m(9).toLong),m(7)  ,m(1)    ,m(4)        ,m(2)  ,m(3)    ,m(19) ,m(20) ,m(8)))
     }).foreachRDD(rdd =>{
       updateGonganBroadcast
 
@@ -233,6 +233,7 @@ object IntelligentSMSApplication extends TimeFuncs with Serializable {
         val bamengbianjing = bamengbianjingzhiduAreaList.Bamengbianjing
         val tumujibaohuqu = tumujibaohuquAreaList.tumujibaohuqu
         val wulagaiGuanliqu = wulagaiGuanliquAreaList.wulagaiguanliqu
+        val wulagaiguanliqulvyou = wulagaiGuanliquAreaList.wulagaiguanliqulvyou
         val chuoerlinyeju = chuoerlinyejuAreaList.chuoerlinyeju
         val budui32107Youqi = budui32107AreaList.budui32107Youqi
         val budui32107Zuoqi = budui32107AreaList.budui32107Zuoqi
@@ -538,8 +539,10 @@ object IntelligentSMSApplication extends TimeFuncs with Serializable {
             if(alashanjingjiqu.contains(lac_ci)) send(147)
             // 乌拉特前旗文化旅游广电局 148
             if (wulateqianqilvyou.contains(lac_ci)) send(148)
-            //              鄂尔多斯，达拉特旗43（内蒙古圣景文化旅游发展有限责任公司）  20190826 【变更需求】Fw:内蒙古圣景文化旅游发展有限责任公司要求针对达拉特旗基站下所有用户发送短信的需求
+            // 鄂尔多斯，达拉特旗43（内蒙古圣景文化旅游发展有限责任公司）  20190826 【变更需求】Fw:内蒙古圣景文化旅游发展有限责任公司要求针对达拉特旗基站下所有用户发送短信的需求
             if (dalateqi.contains(lac_ci)) send(43)
+            // 乌拉盖管理区文体旅游广电局 201
+            if (local_city.equals("0479") && wulagaiguanliqulvyou.contains(lac_ci)) send(201)
 
             //            呼和浩特房屋安全鉴定中心125
             /*if (huhehaoteSiqu1.contains(lac_ci)

@@ -76,14 +76,14 @@ object IntelligentSMSApplicationWithStayDuration extends TimeFuncs with Serializ
     kafkaStreams.map(m =>{
       m.value().split(",", -1)
     }).filter((f: Array[String]) => {
-      if (f.length >= 25 && f(7).nonEmpty) {
+      if (f.length >= 25 && f(7).length >= 11) {
         true
       } else{
         false
       }
     }).map(m => {
       //     (业务流程开始时间)    ,手机号 ,所在地市  ,用户漫游类型 ,归属省  ,归属地市  ,lac   ,cell
-      (m(7),((m(10),m(9).toLong) ,m(7)  ,m(1)     ,m(4)        ,m(2)   ,m(3)     ,m(19) ,m(20)))
+      (m(7),((m(11),m(9).toLong) ,m(7)  ,m(1)     ,m(4)        ,m(2)   ,m(3)     ,m(19) ,m(20)))
     }).foreachRDD(rdd =>{
       rdd.partitionBy(new HashPartitioner(200)).foreachPartition(partition =>{
         val targetTopic = "YZ_TD_YUNMAS_ALL"
