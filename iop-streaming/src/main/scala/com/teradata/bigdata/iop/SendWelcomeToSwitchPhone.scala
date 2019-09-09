@@ -41,7 +41,7 @@ object SendWelcomeToSwitchPhone extends TimeFuncs
   def main(args: Array[String]): Unit = {
     val kafkaProperties = new KafkaProperties
     val sparkConfig = new SparkConfig
-    val conf = sparkConfig.getConf.setAppName("SendWelcomeToSwitchPhone")
+    val conf = sparkConfig.getConf.setAppName(classNameStr)
     val ssc = new StreamingContext(conf, Seconds(30))
 
     val topics = Array(kafkaProperties.integrationTopic)
