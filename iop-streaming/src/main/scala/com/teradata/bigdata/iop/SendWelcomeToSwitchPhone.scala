@@ -93,14 +93,14 @@ object SendWelcomeToSwitchPhone extends TimeFuncs
     kafkaStreams.map(m =>{
       m.value().split(",", -1)
     }).filter((f: Array[String]) => {
-      if (f.length == 25 && f(23).equals("S1-MME")) {
+      if (f.length == 25 && f(23).equals("S1-MME") && f(7).nonEmpty) {
         true
       } else{
         false
       }
     }).map(m => {
       // (phone_no, ((start_time ,start_time_long  ,start_time_date)                                  ,procedureType ,phone_no))
-      (   m(7),     ((m(10)      ,m(9).toLong      ,strToDate(m(10), "yyyy-MM-dd HH:mm:ss")) ,m(8)          ,m(7)))
+      (   m(7),     ((m(11)      ,m(9).toLong      ,strToDate(m(10), "yyyy-MM-dd HH:mm:ss")) ,m(8)          ,m(7)))
     }).foreachRDD(rdd =>{
       if (getIopSalesTimeFlag) {
         if (lacCiActIdListBro.value.size > 0) {

@@ -93,14 +93,14 @@ object SendWelcomeToChangePhone extends TimeFuncs
     kafkaStreams.map(m =>{
       m.value().split(",", -1)
     }).filter((f: Array[String]) => {
-      if (f.length == 25) {
+      if (f.length >= 25 && f(7).nonEmpty) {
         true
       } else{
         false
       }
     }).map(m => {
       //(phone_no, ((start_time, start_time_long, start_time_date), imei, phone_no))
-      (m(7),((m(10),m(9).toLong,strToDate(m(10), "yyyy-MM-dd HH:mm:ss")),m(6),m(7)))
+      (m(7),((m(11),m(9).toLong,strToDate(m(10), "yyyy-MM-dd HH:mm:ss")),m(6),m(7)))
     }).foreachRDD(rdd =>{
       updateBroadcast
       rdd.partitionBy(new HashPartitioner(100)).foreachPartition(partition =>{

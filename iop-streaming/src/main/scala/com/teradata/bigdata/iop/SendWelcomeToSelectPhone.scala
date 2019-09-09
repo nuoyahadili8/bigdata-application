@@ -103,14 +103,14 @@ object SendWelcomeToSelectPhone extends TimeFuncs
     kafkaStreams.map(m =>{
       m.value().split(",", -1)
     }).filter((f: Array[String]) => {
-      if (f.length >= 25) {
+      if (f.length >= 25 && f(7).nonEmpty) {
         true
       } else{
         false
       }
     }).map(m => {
-      // (phone_no, ((start_time  ,start_time_long) ,lac   ,cell  ,phone_no))
-      (  m(7),     ((m(10)       ,m(9).toLong)     ,m(19) ,m(20) ,m(7) ))
+      //(phone_no, ((start_time  ,start_time_long) ,lac   ,cell  ,phone_no))
+      (  m(7),     ((m(11)       ,m(9).toLong)     ,m(19) ,m(20) ,m(7) ))
     }).foreachRDD(rdd =>{
       // 流处理时间在8点到18点之间
       if (getIopSalesTimeFlag) {
