@@ -214,6 +214,9 @@ object SendWelcomeToChangePhone extends TimeFuncs
         if (conn != null) conn.close()
       })
     })
+    ssc.start()
+    ssc.awaitTermination()
+    ssc.stop()
   }
 
 }

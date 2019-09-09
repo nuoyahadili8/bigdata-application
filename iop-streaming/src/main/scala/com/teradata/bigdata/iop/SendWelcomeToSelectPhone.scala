@@ -8,7 +8,7 @@ import com.teradata.bigdata.util.kafka.{KafkaProperties, KafkaSink}
 import com.teradata.bigdata.util.spark.{BroadcastWrapper, SparkConfig}
 import com.teradata.bigdata.util.tools.{LogUtil, TimeFuncs}
 import org.apache.kafka.clients.consumer.{ConsumerConfig, ConsumerRecord}
-import org.apache.kafka.common.serialization.StringSerializer
+import org.apache.kafka.common.serialization.{StringDeserializer, StringSerializer}
 import org.apache.spark.HashPartitioner
 import org.apache.spark.broadcast.Broadcast
 
@@ -54,8 +54,8 @@ object SendWelcomeToSelectPhone extends TimeFuncs
     val kafkaParams = Map[String, String](
       ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG -> brokers,
       ConsumerConfig.GROUP_ID_CONFIG -> groupId,
-      ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG -> classOf[StringSerializer].getName,
-      ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG -> classOf[StringSerializer].getName,
+      ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG -> classOf[StringDeserializer].getName,
+      ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG -> classOf[StringDeserializer].getName,
       ConsumerConfig.AUTO_OFFSET_RESET_CONFIG -> "latest",
       ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG -> "false"
     )
