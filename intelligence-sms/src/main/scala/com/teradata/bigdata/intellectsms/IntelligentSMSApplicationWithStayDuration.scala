@@ -286,6 +286,14 @@ object IntelligentSMSApplicationWithStayDuration extends TimeFuncs with Serializ
             }
           }
 
+          val zgnaimanqizhengfaweiFunc = {
+            if (!roam_type.equals("4") && !roam_type.equals("") && naimanqi.contains(lac_ci) && !owner_city.equals("0475")) {
+              true
+            } else {
+              false
+            }
+          }
+
           val wuhaiFunc = {
             if (!roam_type.equals("4") && !roam_type.equals("") && local_city.equals("0473") && !owner_city.equals("0473")) {
               true
@@ -316,7 +324,7 @@ object IntelligentSMSApplicationWithStayDuration extends TimeFuncs with Serializ
                 val lastStartTime = lastStatus._2
                 // startTimeLong(毫秒)/1000 -lastStartTime(秒)+lastDuration(秒)
                 val newDuration = startTimeLong / 1000 - lastStartTime + lastDuration
-                // 当此用户驻留时间超过指定时间
+                // 当此用户驻留时间超过1个小时
                 if (newDuration >= timeout) {
                   kafkaProducer.value.send(targetTopic, lastEventType + "|" + stringLine)
                 }
@@ -348,6 +356,8 @@ object IntelligentSMSApplicationWithStayDuration extends TimeFuncs with Serializ
             if (lastEventType.equals("55")) judgeUserStayDuration(minhangjichangFunc, 60L * 10)
             // 通辽，奈曼旗82
             if (lastEventType.equals("82")) judgeUserStayDuration(naimanqiFunc, 60L * 5)
+            // 通辽，奈曼旗88
+            if (lastEventType.equals("88")) judgeUserStayDuration(zgnaimanqizhengfaweiFunc, 60L * 30)
             // 赤峰2
             if (lastEventType.equals("2")) judgeUserStayDuration(chifengFunc, 60L * 30)
             // 乌海文体旅游广电局126
@@ -393,6 +403,8 @@ object IntelligentSMSApplicationWithStayDuration extends TimeFuncs with Serializ
             if (minhangjichangFunc) updateStatus("55")
             //            通辽，奈曼旗82
             if (naimanqiFunc) updateStatus("82")
+            // 中共奈曼旗委政法委员会 88
+            if (zgnaimanqizhengfaweiFunc) updateStatus("88")
             //            赤峰2
             if (chifengFunc) updateStatus("2")
             //            乌海文体旅游广电局126
