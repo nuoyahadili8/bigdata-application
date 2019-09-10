@@ -277,6 +277,7 @@ object IntelligentSMSApplicationWithNo extends TimeFuncs with Serializable {
         val chifengyuanbaoshan = chifengyuanbaoshanAreaList.chifengyuanbaoshan
         val wulanhaote = wulanhaoteAreaList.wulanhaote
         val tuquanxianweizhengfawei = tuquanxianweizhengfaweiAreaList.tuquanxianweizhengfawei
+        val tuquanxianrenmingjianchayuan = tuquanxianweizhengfaweiAreaList.tuquanxianrenmingjianchayuan
         val hulunhu = manzhouliAreaList.hulunhu
         val zhalainuoershoufeizhan = zhalaiteAreaList.zhalainuoershoufeizhan
         val dalateqigonganjujiaotongdui1 = dalateqiAreaList.dalateqigonganjujiaotongdui1
@@ -543,6 +544,8 @@ object IntelligentSMSApplicationWithNo extends TimeFuncs with Serializable {
             if (dalateqi.contains(lac_ci)) send(43)
             // 乌拉盖管理区文体旅游广电局 201
             if (local_city.equals("0479") && wulagaiguanliqulvyou.contains(lac_ci)) send(201)
+            // 突泉县人民检察院集团 151
+            if (tuquanxianrenmingjianchayuan.contains(lac_ci)) send(151)
 
             //            呼和浩特房屋安全鉴定中心125
             /*if (huhehaoteSiqu1.contains(lac_ci)
