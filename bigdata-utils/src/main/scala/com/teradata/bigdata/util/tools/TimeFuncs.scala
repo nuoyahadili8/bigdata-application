@@ -65,6 +65,17 @@ trait TimeFuncs extends Serializable {
     ""
   }
 
+  def date2TimeStampLong(dateStr: String, format: String): String = {
+    try {
+      val sdf = new SimpleDateFormat(format)
+      return String.valueOf(sdf.parse(dateStr).getTime)
+    } catch {
+      case e: Exception =>
+        e.printStackTrace()
+    }
+    ""
+  }
+
   def strToDate(str: String, format: String = "yyyy-MM-dd"): Date = {
     val sdFormat = new SimpleDateFormat(format)
     var date: Date = null

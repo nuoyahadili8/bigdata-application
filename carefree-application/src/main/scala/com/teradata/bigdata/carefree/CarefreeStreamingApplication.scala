@@ -3,8 +3,9 @@ package com.teradata.bigdata.carefree
 import java.util.Calendar
 
 import com.teradata.bigdata.carefree.bean.{MarkTable, UserLocationInfo}
+import com.teradata.bigdata.carefree.utils.SparkConfig
 import com.teradata.bigdata.util.kafka.KafkaProperties
-import com.teradata.bigdata.util.spark.{BroadcastWrapper, SparkConfig}
+import com.teradata.bigdata.util.spark.BroadcastWrapper
 import com.teradata.bigdata.util.tools.TimeFuncs
 import org.apache.kafka.clients.consumer.ConsumerConfig
 import org.apache.kafka.common.serialization.StringDeserializer
@@ -93,7 +94,7 @@ object CarefreeStreamingApplication extends TimeFuncs {
     kafkaStreams.map(m =>{
       m.value().split(",", -1)
     }).filter((f: Array[String]) => {
-      if (f.length == 25) {
+      if (f.length >= 25 && f(7).nonEmpty) {
         true
       } else{
         false
