@@ -11,7 +11,7 @@ import org.apache.kafka.clients.consumer.ConsumerConfig
 import org.apache.kafka.common.serialization.{StringDeserializer, StringSerializer}
 import org.apache.spark.HashPartitioner
 import org.apache.spark.broadcast.Broadcast
-import org.apache.spark.streaming.kafka010.{ConsumerStrategies, KafkaUtils, LocationStrategies}
+import org.apache.spark.streaming.kafka010._
 import org.apache.spark.streaming.{Seconds, StreamingContext}
 
 import scala.collection.mutable
@@ -29,6 +29,7 @@ object IntelligentSMSApplicationAuto extends TimeFuncs with Serializable with Yu
   var lastTime = Calendar.getInstance().getTime
   val timeFreq: Long = 300000L
   val classNameStr = "IntelligentSMSApplicationAuto"
+  val log = org.apache.log4j.LogManager.getLogger(classNameStr)
 
   def main(args: Array[String]): Unit = {
     val kafkaProperties = new KafkaProperties
@@ -66,7 +67,10 @@ object IntelligentSMSApplicationAuto extends TimeFuncs with Serializable with Yu
       }
     }
 
-    val kafkaStreams = KafkaUtils.createDirectStream[String, String](ssc, LocationStrategies.PreferConsistent, ConsumerStrategies.Subscribe[String, String](sourceTopic, kafkaParams))
+    val kafkaStreams = KafkaUtils.createDirectStream[String, String](
+        ssc
+      , LocationStrategies.PreferConsistent
+      , ConsumerStrategies.Subscribe[String, String](sourceTopic, kafkaParams))
 
     val kafkaProducer: Broadcast[KafkaSink[String, String]] = {
       val kafkaProducerConfig = {
@@ -79,7 +83,7 @@ object IntelligentSMSApplicationAuto extends TimeFuncs with Serializable with Yu
       ssc.sparkContext.broadcast(KafkaSink[String, String](kafkaProducerConfig))
     }
 
-    kafkaStreams.map(m =>{
+    val stream = kafkaStreams.map(m =>{
       m.value().split(",", -1)
     }).filter((f: Array[String]) => {
       if (f.length >= 25 && f(7).nonEmpty) {
@@ -90,8 +94,10 @@ object IntelligentSMSApplicationAuto extends TimeFuncs with Serializable with Yu
     }).map(m => {
       //     (业务流程开始时间)    ,手机号 ,所在地市  ,用户漫游类型 ,归属省  ,归属地市  ,lac   ,cell
       (m(7),((m(11),m(9).toLong) ,m(7)  ,m(1)     ,m(4)        ,m(2)   ,m(3)     ,m(19) ,m(20)))
-    }).foreachRDD(rdd =>{
+    })
+    stream.foreachRDD(rdd =>{
       updateBroadcast
+//      val offsetRanges = rdd.asInstanceOf[HasOffsetRanges].offsetRanges
       rdd.partitionBy(new HashPartitioner(partitions = 200)).foreachPartition(partition =>{
         //  gbase获取活动配置 pview.vw_cloudmas_rule_to_td
         //    规则ID，（活动要求所在的城市,活动要求所在的基站,漫游类型,驻留时长）
@@ -141,6 +147,7 @@ object IntelligentSMSApplicationAuto extends TimeFuncs with Serializable with Yu
 
         if (hbaseConnection != null) hbaseConnection.close()
       })
+//      stream.asInstanceOf[CanCommitOffsets].commitAsync(offsetRanges)
     })
     ssc.start()
     ssc.awaitTermination()

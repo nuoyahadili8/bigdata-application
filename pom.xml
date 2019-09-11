@@ -19,6 +19,7 @@
         <module>user-stay-duration</module>
         <module>iop-streaming</module>
         <module>file-sink</module>
+        <module>tour-repair</module>
     </modules>
     <properties>
         <scala.version>2.11.8</scala.version>

@@ -31,7 +31,7 @@ object IntelligentSMSApplicationWithStayDuration extends TimeFuncs with Serializ
 
   var lastTime = Calendar.getInstance().getTime
   val timeFreq: Long = 300000L
-  val classNameStr = "IntelligentSMSApplicationAuto"
+  val classNameStr = "IntelligentSMSApplicationWithStayDuration"
 
   def main(args: Array[String]): Unit = {
     val kafkaProperties = new KafkaProperties()

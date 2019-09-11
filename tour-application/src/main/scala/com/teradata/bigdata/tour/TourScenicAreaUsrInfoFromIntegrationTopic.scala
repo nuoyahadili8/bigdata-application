@@ -134,7 +134,7 @@ object TourScenicAreaUsrInfoFromIntegrationTopic
       }
     }).map(m => {
       //手机号分区字段     业务流程开始时间  ,手机号 ,imei    ,lac     ,cell   ,上行流量  ,下行流量  ,数据类型
-      (m(24), Row(m(11), m(24), m(6), m(19), m(20), "", "", m(23), m(9).toLong))
+      (m(24)        ,Row(m(11)           ,m(24)  ,m(6)   ,m(19)    ,m(20)  ,""       , ""      , m(23), m(9).toLong))
     })
       .foreachRDD(rdd => {
         updateBroadcast
