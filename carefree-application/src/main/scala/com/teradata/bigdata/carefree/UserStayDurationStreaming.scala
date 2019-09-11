@@ -37,7 +37,7 @@ object UserStayDurationStreaming extends TimeFuncs with UserStayDurationFunc {
   def main(args: Array[String]): Unit = {
     val sparkSession = SparkSession
       .builder()
-      .appName("UserStayDurationStreaming")
+      .appName(classNameStr)
       .enableHiveSupport()
       .getOrCreate()
 
