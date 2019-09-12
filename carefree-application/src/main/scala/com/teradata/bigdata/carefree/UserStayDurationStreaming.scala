@@ -152,7 +152,7 @@ object UserStayDurationStreaming extends TimeFuncs with UserStayDurationFunc {
                     val flag ={
                       info.tableFlag match {
                         case "S1-MME" => "1"
-                          _ => "2"
+                        case _ => "2"
                       }
                     }
 

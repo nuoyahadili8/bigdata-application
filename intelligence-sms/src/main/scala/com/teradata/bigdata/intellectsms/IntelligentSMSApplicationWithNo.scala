@@ -217,7 +217,8 @@ object IntelligentSMSApplicationWithNo extends TimeFuncs with Serializable {
         val chenbaerhuqi = chenbaerhuqiAreaList.chenbaerhuqi
         val eerduosi = eerduosiAreaList.eerduosi
         val eerduosiLeaders = eerduosiAreaList.eerduosiLeaders
-        val elunchunJijianjiancha = elunchunAreaList.elunchunJijianjiancha
+//        val elunchunJijianjiancha = elunchunAreaList.elunchunJijianjiancha
+        val elunchunjilvjianchaweiyuan = elunchunAreaList.elunchunjilvjianchaweiyuan
         val elunchungonganju = elunchunAreaList.elunchungonganju
         val erlianhaotexuanchuanbu = erlianhaotexuanchuanbuAreaList.erlianhaotexuanchuanbu
         val yijinhuoluoqi = yijinhuoluoqiAreaList.yijinhuoluoqi
@@ -388,7 +389,8 @@ object IntelligentSMSApplicationWithNo extends TimeFuncs with Serializable {
             //              甘其毛都29
             if (ganqimaodu.contains(lac_ci)) send(29)
             //              鄂伦春纪检监察34
-            if (elunchunJijianjiancha.contains(lac_ci)) send(34)
+//            if (elunchunJijianjiancha.contains(lac_ci)) send(34)
+            if(elunchunjilvjianchaweiyuan.contains(lac_ci)) send(34)
             //              鄂伦春公安局35
             if (elunchungonganju.contains(lac_ci)) send(35)
             //            二连浩特宣传部36
