@@ -119,10 +119,10 @@ object IntelligentSMSApplicationWithStayDuration extends TimeFuncs with Serializ
         val distinctPartition: List[String] = sortedPartition.map(_._1).distinct
 
         //b_yz_app_td_hbase:TourMasUserNew 智能短信用户驻留时长实时表
-        val lastUserStatus: mutable.Map[String, (String, Long, Long)] = hbaseUtilValue.getResultByKeyList_MAS(conn, "b_yz_app_td_hbase:TourMasUserNew", distinctPartition)
+        val lastUserStatus: mutable.Map[String, (String, Long, Long)] = hbaseUtilValue.getResultByKeyList_MAS(conn, "b_yz_app_td_hbase:TourMasUser", distinctPartition)
 
         //        内蒙领导离开状态查询结果
-        val leadersStatus: mutable.HashMap[String, (String, String)] = hbaseUtilValue.getResultByKeyList_Leader("b_yz_app_td_hbase:TourMasLeaderUserNew", distinctPartition)
+        val leadersStatus: mutable.HashMap[String, (String, String)] = hbaseUtilValue.getResultByKeyList_Leader("b_yz_app_td_hbase:TourMasLeaderUser", distinctPartition)
         val chifengLeadersStatus = leadersStatus.filter(_._2._1.equals("134"))
         val eerduosiLeadersStatus = leadersStatus.filter(_._2._1.equals("47"))
         val huhehaoteLeadersStatus = leadersStatus.filter(_._2._1.equals("141"))
@@ -454,15 +454,15 @@ object IntelligentSMSApplicationWithStayDuration extends TimeFuncs with Serializ
           // judgeLeaderStatus(huhehaoteLeadersStatus, "141", "0471", huhehaoteLeaderFunc)
         })
         // 将领导的状态信息更新
-        hbaseUtilValue.putByKeyColumnList_Leader(conn, "b_yz_app_td_hbase:TourMasLeaderUserNew", putLeadersStatusMap.toList)
+        hbaseUtilValue.putByKeyColumnList_Leader(conn, "b_yz_app_td_hbase:TourMasLeaderUser", putLeadersStatusMap.toList)
         // 更新新进入计时区域和驻留时长更新区域的用户
         val putResultList: List[(String, (String, Long, Long))] = lastUserStatus.filter(!_._2._1.equals("X")).toList
 
-        hbaseUtilValue.putByKeyColumnList_MAS(conn, "b_yz_app_td_hbase:TourMasUserNew", putResultList)
+        hbaseUtilValue.putByKeyColumnList_MAS(conn, "b_yz_app_td_hbase:TourMasUser", putResultList)
 
         // 删除hbase已经离开的用户 根据手机号rowkey删除
         val delResultList = lastUserStatus.filter(_._2._1.equals("X")).map(_._1).toList
-        hbaseUtilValue.deleteRows(conn,"b_yz_app_td_hbase:TourMasUserNew", delResultList)
+        hbaseUtilValue.deleteRows(conn,"b_yz_app_td_hbase:TourMasUser", delResultList)
         if (conn != null) conn.close()
       })
     })
