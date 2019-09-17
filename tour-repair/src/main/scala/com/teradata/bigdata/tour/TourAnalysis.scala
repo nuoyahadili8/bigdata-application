@@ -24,7 +24,7 @@ import scala.collection.mutable
   */
 object TourAnalysis {
 
-  val classNameStr = "SparkConnectHbaseTest"
+  val classNameStr = "TourAnalysis"
   val tourHistoryHbaseTableName = "b_yz_app_td_hbase:TourHistory"
   val sceneryCountHbaseTableName = "b_yz_app_td_hbase:SceneryCount"
   val userLastStayHbaseToHdfs = "b_yz_app_td_hbase:UserLastStay"
