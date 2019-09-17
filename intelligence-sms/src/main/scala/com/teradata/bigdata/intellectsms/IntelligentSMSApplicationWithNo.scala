@@ -324,6 +324,7 @@ object IntelligentSMSApplicationWithNo extends TimeFuncs with Serializable {
         val alashanqixiangju = alashanjingjiquAreaList.alashanqixiangju
         val wulateqianqilvyou = wulateqianqiAreaList.wulateqianqilvyou
         val eergunasengzelvyou = eergunaAreaList.eergunasengzelvyou
+        val alashanjuyanchenglongwenlv = alashanjingjiquAreaList.alashanjuyanchenglongwenlv
 
         partition
           .toList
@@ -663,6 +664,8 @@ object IntelligentSMSApplicationWithNo extends TimeFuncs with Serializable {
               if (local_city.equals("0478") && bayannaoerlvye.contains(lac_ci)) send(143)
               // 额尔古纳市森泽旅游文化有限公司149
               if (local_city.equals("0470") && eergunasengzelvyou.contains(lac_ci)) send(149)
+              // 阿拉善居延呈龙文化旅游发展有限公司152
+              if(local_city.equals("0483") && alashanjuyanchenglongwenlv.contains(lac_ci)) send(152)
             }
             //            非漫入人群，本地用户
             else {
