@@ -12,7 +12,6 @@
         <module>bigdata-utils</module>
         <module>intelligence-sms</module>
         <module>bigdata-topic-integration</module>
-        <module>easyDataX</module>
         <module>iop-rule-parser</module>
         <module>tour-application</module>
         <module>carefree-application</module>

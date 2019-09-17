@@ -1,8 +1,0 @@
-server:
-  servlet:
-    context-path: /health
-
-
-spring:
-  application:
-    name: hdfs2LocalServer

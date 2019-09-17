@@ -1,8 +1,0 @@
-server:
-  servlet:
-    context-path: /example
-  port: 8080
-
-spring:
-  application:
-    name: spring-boot-assembly
