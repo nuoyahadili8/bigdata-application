@@ -17,11 +17,6 @@
             <artifactId>bigdata-utils</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <!--<dependency>-->
-            <!--<groupId>eu.unicredit</groupId>-->
-            <!--<artifactId>hbase-rdd</artifactId>-->
-            <!--<version>0.9.0</version>-->
-        <!--</dependency>-->
     </dependencies>
 
 
@@ -38,14 +33,14 @@
                             <goal>shade</goal>
                         </goals>
                         <configuration>
-                            <!--<transformers>-->
-                            <!--<transformer-->
-                            <!--implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">-->
-                            <!--&lt;!&ndash;main方法所在的类路径&ndash;&gt;-->
+                            <transformers>
+                            <transformer
+                            implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                            <!--main方法所在的类路径-->
                             <!--<mainClass>com.teradata.bigdata.kafka.integration.IntegrationKafkaTopicWithStructStreaming</mainClass>-->
 
-                            <!--</transformer>-->
-                            <!--</transformers>-->
+                            </transformer>
+                            </transformers>
                             <artifactSet>
                                 <includes>
                                     <!--需要一起打包的依赖jar包-->

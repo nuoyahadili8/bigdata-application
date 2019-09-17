@@ -198,17 +198,17 @@ object TourScenicAreaUsrInfoFromIntegrationTopic
             // phone_no，（start_time, phone_no, imei, lac, cell, up_flow, down_flow, data_type, start_time_long）
             partitionRow.foreach((line: (String, Row)) => {
 
-              def updateSceneryStatus(sceneryId: String, hashMap: mutable.HashMap[(String, ScenicInfo), Int]): Unit = {
+              def updateSceneryStatus(sceneryId: String, userCheckMap: mutable.HashMap[(String, ScenicInfo), Int]): Unit = {
                 //              println("updateSceneryStatus" + sceneryId)
                 if (scenicOfSelectLacCi.contains(sceneryId)) {
                   //                println("scenicOfSelectLacCi.contains(sceneryId)")
                   val scenicInfo: ScenicInfo = scenicOfSelectLacCi(sceneryId)
-                  if (hashMap.contains((sceneryId, scenicInfo))) {
-                    val number = hashMap((sceneryId, scenicInfo))
-                    hashMap.update((sceneryId, scenicInfo), number + 1)
+                  if (userCheckMap.contains((sceneryId, scenicInfo))) {
+                    val number = userCheckMap((sceneryId, scenicInfo))
+                    userCheckMap.update((sceneryId, scenicInfo), number + 1)
                   }
                   else {
-                    hashMap.update((sceneryId, scenicInfo), 1)
+                    userCheckMap.update((sceneryId, scenicInfo), 1)
                   }
                 }
               }

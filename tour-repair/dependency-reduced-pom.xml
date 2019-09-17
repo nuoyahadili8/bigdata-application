@@ -19,6 +19,9 @@
               <goal>shade</goal>
             </goals>
             <configuration>
+              <transformers>
+                <transformer />
+              </transformers>
               <artifactSet>
                 <includes>
                   <include>com.teradata.bigdata:bigdata-utils</include>
