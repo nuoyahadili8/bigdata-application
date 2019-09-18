@@ -617,6 +617,7 @@ object IntelligentSMSApplicationWithNo extends TimeFuncs with Serializable {
               if (local_city.equals("0478") && wulatezhongqizhengfawei.contains(lac_ci)) send(87)
               //              赤峰，敖汉旗政法委90
               if (local_city.equals("0476") && chifengaohanqizhengfawei.contains(lac_ci)) send(90)
+              // 赤峰市中共敖汉旗委政法委员会107
               if (local_city.equals("0476") && chifengaohanqizhengfawei.contains(lac_ci)) send(107)
               //              呼伦贝尔，文旅广电局93
               if (local_city.equals("0470") && hulunbeierwenlvguangdian.contains(lac_ci)) send(93)

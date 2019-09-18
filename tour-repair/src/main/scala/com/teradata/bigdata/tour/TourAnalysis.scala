@@ -15,7 +15,7 @@ import scala.collection.mutable
 
 /**
   * @Project:
-  * @Description:  每日晚上11点半执行，修复旅游相关表数据
+  * @Description: 每日晚上11点半执行，修复旅游相关表数据
   * @Version 1.0.0
   * @Throws SystemException:
   * @Author: <li>2019/9/17/017 Administrator Create 1.0
@@ -46,14 +46,14 @@ object TourAnalysis {
     //    删除TourHistory
     hbaseUtil.dropTable(conn, tourHistoryHbaseTableName)
     //    重建自带预分区TourHistory表
-    hbaseUtil.createTable(conn,tourHistoryHbaseTableName, splitKeys)
+    hbaseUtil.createTable(conn, tourHistoryHbaseTableName, splitKeys)
     //    删除SceneryCount
     hbaseUtil.dropTable(conn, sceneryCountHbaseTableName)
     //    重建SceneryCount
-    hbaseUtil.createTable(conn,sceneryCountHbaseTableName)
+    hbaseUtil.createTable(conn, sceneryCountHbaseTableName)
 
     hbaseConfig.set(TableInputFormat.INPUT_TABLE, userLastStayHbaseToHdfs)
-    val newHbaseConfig=hbaseUtil.getConf()
+    val newHbaseConfig = hbaseUtil.getConf()
     newHbaseConfig.set("mapreduce.output.fileoutputformat.outputdir", "/tmp")
 
     val sc: SparkContext = sparkSession.sparkContext
@@ -83,10 +83,11 @@ object TourAnalysis {
     //   当前unix时间
     val currentUnixTime = System.currentTimeMillis()
 
-    val userStayInfo: RDD[(String, UserStayInfo)] =rs.partitionBy(new HashPartitioner(300)).mapPartitions(partition =>{
-      val rowPartition: Seq[(ImmutableBytesWritable, Result)] =partition.toList
-      val ll:mutable.HashMap[String, UserStayInfo] = new scala.collection.mutable.HashMap
-      rowPartition.foreach(result =>{
+    val userStayInfo: RDD[(String, UserStayInfo)] = rs.partitionBy(new HashPartitioner(300))
+      .mapPartitions(partition => {
+      val rowPartition: Seq[(ImmutableBytesWritable, Result)] = partition.toList
+      val ll: mutable.HashMap[String, UserStayInfo] = new scala.collection.mutable.HashMap
+      rowPartition.foreach(result => {
         val phoneNo = Bytes.toString(result._2.getRow)
         val lacCell = Bytes.toString(result._2.getValue(Bytes.toBytes("0"), Bytes.toBytes("0")))
         val timestampLacCell = result._2.listCells().get(0).getTimestamp
@@ -94,7 +95,7 @@ object TourAnalysis {
         if (currentUnixTime - timestampLacCell < 86400 * 1000) {
           if (selectLacCiList.contains(lacCell)) {
             val sceneryId = selectLacCiListBroadCast.value(lacCell)
-            ll.update(phoneNo,UserStayInfo(sceneryId,lacCell,timestampLacCell))
+            ll.update(phoneNo, UserStayInfo(sceneryId, lacCell, timestampLacCell))
           }
         }
       })
@@ -102,7 +103,7 @@ object TourAnalysis {
     })
 
     // 将用户最后景区位置存入TourHistory
-    userStayInfo.map(line =>{
+    userStayInfo.map(line => {
       val phoneNo = line._1
       val userStayInfo = line._2
       val put = new Put(Bytes.toBytes(phoneNo))
@@ -112,12 +113,12 @@ object TourAnalysis {
 
     // 聚合每个景区人数
     // 将景区最后状态存入SceneryCount
-    userStayInfo.map(line =>{
+    userStayInfo.map(line => {
       val phoneNo = line._1
       val userStayInfo = line._2
       val sceneryId = userStayInfo.sceneryId
-      (phoneNo,sceneryId)
-    }).groupBy(_._2).map(kv =>{
+      (phoneNo, sceneryId)
+    }).groupBy(_._2).map(kv => {
       val sceneryId = kv._1
       val sum = kv._2.toList.size
       val put = new Put(Bytes.toBytes(sceneryId))

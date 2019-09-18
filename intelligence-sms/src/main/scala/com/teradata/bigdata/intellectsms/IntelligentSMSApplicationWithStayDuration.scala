@@ -121,7 +121,7 @@ object IntelligentSMSApplicationWithStayDuration extends TimeFuncs with Serializ
 
         val distinctPartition: List[String] = sortedPartition.map(_._1).distinct
 
-        //b_yz_app_td_hbase:TourMasUserNew 智能短信用户驻留时长实时表
+        //b_yz_app_td_hbase:TourMasUser 智能短信用户驻留时长实时表
         val lastUserStatus: mutable.Map[String, (String, Long, Long)] = hbaseUtilValue.getResultByKeyList_MAS(conn, "b_yz_app_td_hbase:TourMasUser", distinctPartition)
 
         //        内蒙领导离开状态查询结果

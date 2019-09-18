@@ -32,57 +32,57 @@ import com.google.common.util.concurrent.ThreadFactoryBuilder;
  * @Modified By:
  */
 public class FileSink extends AbstractSink implements Configurable {
-    private static final Logger logger = LoggerFactory.getLogger(FileSink .class );
+    private static final Logger logger = LoggerFactory.getLogger(FileSink.class);
 
-    private String path ;
+    private String path;
     private static final String defaultFileName = "FlumeData";
     private static final int defaultMaxOpenFiles = 50;
 
     /**
      * 等待阻止BucketWriter调用的默认时间长度操作超时之前，防止服务器挂起。
      */
-    private long txnEventMax ;
+    private long txnEventMax;
 
-    private FileWriterLinkedHashMap sfWriters ;
+    private FileWriterLinkedHashMap sfWriters;
 
-    private String serializerType ;
-    private Context serializerContext ;
+    private String serializerType;
+    private Context serializerContext;
 
     private boolean needRounding = false;
     private int roundUnit = Calendar.SECOND;
     private int roundValue = 1;
-    private SinkCounter sinkCounter ;
+    private SinkCounter sinkCounter;
 
-    private int maxOpenFiles ;
+    private int maxOpenFiles;
     private String extension = ".AVL";
     private String dateFormatStr = "yyyyMMddHHmmss";
 
-    private ScheduledExecutorService timedRollerPool ;
+    private ScheduledExecutorService timedRollerPool;
 
-    private long rollInterval ;
+    private long rollInterval;
 
     @Override
     public void configure(Context context) {
 
-        String directory = Preconditions. checkNotNull(
-                context.getString( "file.path"), "file.path is required");
-        String fileName = context.getString( "file.filePrefix", defaultFileName);
-        extension = context.getString("file.extension",extension);
+        String directory = Preconditions.checkNotNull(
+                context.getString("file.path"), "file.path is required");
+        String fileName = context.getString("file.filePrefix", defaultFileName);
+        extension = context.getString("file.extension", extension);
         this.path = directory + "/" + fileName;
 
-        maxOpenFiles = context.getInteger("file.maxOpenFiles" , defaultMaxOpenFiles);
-        dateFormatStr = context.getString("file.dateFormat" , dateFormatStr);
+        maxOpenFiles = context.getInteger("file.maxOpenFiles", defaultMaxOpenFiles);
+        dateFormatStr = context.getString("file.dateFormat", dateFormatStr);
 
-        serializerType = context.getString("sink.serializer" , "TEXT" );
-        serializerContext = new Context(context.getSubProperties(EventSerializer. CTX_PREFIX));
-        txnEventMax = context.getLong("file.txnEventMax" , 1L);
+        serializerType = context.getString("sink.serializer", "TEXT");
+        serializerContext = new Context(context.getSubProperties(EventSerializer.CTX_PREFIX));
+        txnEventMax = context.getLong("file.txnEventMax", 1L);
         if (sinkCounter == null) {
             sinkCounter = new SinkCounter(getName());
         }
 
-        rollInterval = context.getLong("file.rollInterval" , 30L);
-        String rollerName = "hdfs-" + getName() + "-roll-timer-%d" ;
-        timedRollerPool = Executors.newScheduledThreadPool( maxOpenFiles,
+        rollInterval = context.getLong("file.rollInterval", 30L);
+        String rollerName = "hdfs-" + getName() + "-roll-timer-%d";
+        timedRollerPool = Executors.newScheduledThreadPool(maxOpenFiles,
                 new ThreadFactoryBuilder().setNameFormat(rollerName).build());
     }
 
@@ -90,7 +90,7 @@ public class FileSink extends AbstractSink implements Configurable {
     public Status process() throws EventDeliveryException {
         Channel channel = getChannel();
         Transaction transaction = channel.getTransaction();
-        List<BucketFileWriter> writers = Lists. newArrayList();
+        List<BucketFileWriter> writers = Lists.newArrayList();
         transaction.begin();
         try {
             Event event = null;
@@ -103,15 +103,15 @@ public class FileSink extends AbstractSink implements Configurable {
 
                 // 通过替换占位符重建路径名
                 String realPath = BucketPath.escapeString(path, event.getHeaders(), needRounding,
-                        roundUnit, roundValue );
+                        roundUnit, roundValue);
                 BucketFileWriter bucketFileWriter = sfWriters.get(realPath);
 
                 // 还没有看到这个文件，所以打开它并缓存句柄
                 if (bucketFileWriter == null) {
                     bucketFileWriter = new BucketFileWriter(dateFormatStr);
                     bucketFileWriter.open(realPath, serializerType,
-                            serializerContext, rollInterval , timedRollerPool,
-                            sfWriters,extension);
+                            serializerContext, rollInterval, timedRollerPool,
+                            sfWriters, extension);
                     sfWriters.put(realPath, bucketFileWriter);
                 }
 
@@ -144,16 +144,16 @@ public class FileSink extends AbstractSink implements Configurable {
             }
 
             if (event == null) {
-                return Status.BACKOFF ;
+                return Status.BACKOFF;
             }
-            return Status.READY ;
+            return Status.READY;
         } catch (IOException eIO) {
             transaction.rollback();
-            logger.warn("File IO error" , eIO);
-            return Status.BACKOFF ;
+            logger.warn("File IO error", eIO);
+            return Status.BACKOFF;
         } catch (Throwable th) {
             transaction.rollback();
-            logger.error("process failed" , th);
+            logger.error("process failed", th);
             if (th instanceof Error) {
                 throw (Error) th;
             } else {
