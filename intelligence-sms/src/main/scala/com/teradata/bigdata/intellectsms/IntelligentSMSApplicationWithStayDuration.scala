@@ -94,6 +94,7 @@ object IntelligentSMSApplicationWithStayDuration extends TimeFuncs with Serializ
         val wengniuteAreaList = new WengniuteAreaList
         val minhangjichangAreaList = new MinhangjichangAreaList
         val naimanqiAreaList = new NaimanqiAreaList
+        val chifengsongshanlaolin = new Chifengsongshanlaolin
         //        val bayannaoerAreaList = new BayannaoerAreaList
 
         val hbaseUtilValue = hbaseUtilBroadcast.value
@@ -111,6 +112,8 @@ object IntelligentSMSApplicationWithStayDuration extends TimeFuncs with Serializ
         val wengniute = wengniuteAreaList.wengniute
         val jichang = minhangjichangAreaList.jichang
         val naimanqi = naimanqiAreaList.naimanqi
+        val songshanguoyinglaofulinchang = chifengsongshanlaolin.songshanguoyinglaofulinchang
+        val songshanguoyingdanianzilinchang = chifengsongshanlaolin.songshanguoyingdanianzilinchang
         //        val bayannaoerlvye = bayannaoerAreaList.bayannaoerlvye
 
         // 时间排序，以便数据落到同一计算单元
@@ -302,6 +305,24 @@ object IntelligentSMSApplicationWithStayDuration extends TimeFuncs with Serializ
             }
           }
 
+          // 赤峰市松山区国营老府林场 150
+          val songshanguoyinglaofulinchangFunc = {
+            if (!roam_type.equals("4") && !roam_type.equals("") && local_city.equals("0476") && songshanguoyinglaofulinchang.contains(lac_ci)) {
+              true
+            } else {
+              false
+            }
+          }
+
+          // 赤峰市松山区国营大碾子林场 153
+          val songshanguoyingdanianzilinchangFunc = {
+            if (!roam_type.equals("4") && !roam_type.equals("") && local_city.equals("0476") && songshanguoyingdanianzilinchang.contains(lac_ci)) {
+              true
+            } else {
+              false
+            }
+          }
+
           //          val bayannaoerlvyeFunc ={
           //            if (!roam_type.equals("4")
           //              && !roam_type.equals("")
@@ -342,15 +363,15 @@ object IntelligentSMSApplicationWithStayDuration extends TimeFuncs with Serializ
 
             // 巴丹吉林旅游区14
             if (lastEventType.equals("14")) judgeUserStayDuration(badanjilinFunc, 60L * 60)
-            // 红花尔基15
+            // 呼伦贝尔市红花尔基林业局15
             if (lastEventType.equals("15")) judgeUserStayDuration(honghuaerjiFunc, 60L * 30)
             // 阿拉善,乌兰布和23
             if (lastEventType.equals("23")) judgeUserStayDuration(wulanbuheFunc, 60L * 60)
             // 兴安盟,乌兰浩特33
             if (lastEventType.equals("33")) judgeUserStayDuration(wulanhaoteFunc, 60L * 60 * 3)
-            // 赤峰，翁牛特旗22
+            // 赤峰，中共翁牛特旗委员会宣传部22
             if (lastEventType.equals("22")) judgeUserStayDuration(wengniuteFunc, 60L * 60 * 5)
-            // 通辽9
+            // 通辽市旅游发展委员会9
             if (lastEventType.equals("9")) judgeUserStayDuration(tongliaoFunc, 60L * 4)
             // 民航机场55
             if (lastEventType.equals("55")) judgeUserStayDuration(minhangjichangFunc, 60L * 10)
@@ -375,6 +396,11 @@ object IntelligentSMSApplicationWithStayDuration extends TimeFuncs with Serializ
 
             // 漫入    内蒙古巴彦绿业实业有限公司143
             // if (lastEventType.equals("143")) judgeUserStayDuration(bayannaoerlvyeFunc, 60L * 30)
+
+            // 赤峰市松山区国营老府林场150
+            if (lastEventType.equals("150")) judgeUserStayDuration(songshanguoyinglaofulinchangFunc, 60L * 30)
+            // 赤峰市松山区国营大碾子林场 153
+            if (lastEventType.equals("153")) judgeUserStayDuration(songshanguoyingdanianzilinchangFunc, 60L * 30)
           }
           // 不包含驻留时长的
           else{
@@ -397,7 +423,7 @@ object IntelligentSMSApplicationWithStayDuration extends TimeFuncs with Serializ
             if (wulanhaoteFunc) updateStatus("33")
             //            赤峰，翁牛特旗22
             if (wengniuteFunc) updateStatus("22")
-            //              通辽9
+            //              通辽市旅游发展委员会9
             if (tongliaoFunc) updateStatus("9")
             //            明航机场55
             if (minhangjichangFunc) updateStatus("55")
@@ -421,6 +447,11 @@ object IntelligentSMSApplicationWithStayDuration extends TimeFuncs with Serializ
             //              lastUserStatus.update(phone_no, ("27", startTimeLong / 1000, 0))
             //            }
             //            if(bayannaoerlvyeFunc) updateStatus("143")
+
+            // 赤峰市松山区国营老府林场 150
+            if (songshanguoyinglaofulinchangFunc) updateStatus("150")
+            // 赤峰市松山区国营大碾子林场 153
+            if (songshanguoyingdanianzilinchangFunc) updateStatus("153")
           }
 
           // 1.判断领导是否离开去了外地

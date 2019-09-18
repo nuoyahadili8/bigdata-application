@@ -191,6 +191,7 @@ object IntelligentSMSApplicationWithNo extends TimeFuncs with Serializable {
         val siziwangqilvyouAreaList = new SiziwangqilvyouAreaList
         val bayannaoerAreaList = new BayannaoerAreaList
         val baoTouExtAreaList = new BaoTouExtAreaList
+        val ximengdongwuzhumuqingqiAreaList = new XimengdongwuzhumuqingqiAreaList
 
 
         val aershanLacCiList = area.aershanLacCiList
@@ -325,6 +326,7 @@ object IntelligentSMSApplicationWithNo extends TimeFuncs with Serializable {
         val wulateqianqilvyou = wulateqianqiAreaList.wulateqianqilvyou
         val eergunasengzelvyou = eergunaAreaList.eergunasengzelvyou
         val alashanjuyanchenglongwenlv = alashanjingjiquAreaList.alashanjuyanchenglongwenlv
+        val ximengdongwuzhumuqingqi = ximengdongwuzhumuqingqiAreaList.ximengdongwuzhumuqingqi
 
         partition
           .toList
@@ -381,13 +383,13 @@ object IntelligentSMSApplicationWithNo extends TimeFuncs with Serializable {
             if (local_city.equals("0482")) send(5)
             //              鄂伦春旗委宣传部11
             if (elunchunqiweixuanchuanbu.contains(lac_ci)) send(11)
-            //              包头移动17
+            //              包头移动 产品经理全量测试虚拟集团 17
             if (baotouyidong.contains(lac_ci)) send(17)
             //                兴安盟五岔沟28
             if (xinganmengWuchakou.contains(lac_ci)) send(28)
             //            满洲里18
             //            if (manzhouli.contains(lac_ci)) send(18)
-            //              甘其毛都29
+            // 巴彦淖尔市甘其毛都口岸管理委员会29
             if (ganqimaodu.contains(lac_ci)) send(29)
             //              鄂伦春纪检监察34
 //            if (elunchunJijianjiancha.contains(lac_ci)) send(34)
@@ -549,6 +551,8 @@ object IntelligentSMSApplicationWithNo extends TimeFuncs with Serializable {
             if (local_city.equals("0479") && wulagaiguanliqulvyou.contains(lac_ci)) send(201)
             // 突泉县人民检察院集团 151
             if (tuquanxianrenmingjianchayuan.contains(lac_ci)) send(151)
+            // 锡盟东乌珠穆沁旗防火办公室 154
+            if (ximengdongwuzhumuqingqi.contains(lac_ci)) send(154)
 
             //            呼和浩特房屋安全鉴定中心125
             /*if (huhehaoteSiqu1.contains(lac_ci)
@@ -572,7 +576,7 @@ object IntelligentSMSApplicationWithNo extends TimeFuncs with Serializable {
 
             //              漫入人群
             if (!roam_type.equals("4") && !roam_type.equals("")) {
-              //              赤峰旅游局2
+              //              赤峰市旅游发展委员会2
               if (local_city.equals("0476")) send(2)
               //            呼伦贝尔，新巴尔虎左旗6
               if (local_city.equals("0470") && xinBaerhuzuoqi.contains(lac_ci)) send(6)
