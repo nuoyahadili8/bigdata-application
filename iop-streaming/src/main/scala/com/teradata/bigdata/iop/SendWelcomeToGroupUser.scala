@@ -44,7 +44,7 @@ object SendWelcomeToGroupUser extends IopFuncs with LogUtil{
   def main(args: Array[String]): Unit = {
     val kafkaProperties = new KafkaProperties
     val sparkConfig = new SparkConfig
-    val conf = sparkConfig.getConf.setAppName(classNameStr)
+    val conf = sparkConfig.getConf.set("spark.streaming.kafka.consumer.poll.ms", "60000").setAppName(classNameStr)
     val ssc = new StreamingContext(conf, Seconds(30))
 
     val topics = Array("IOP-GROUP-ACT-TMP")
