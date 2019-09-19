@@ -419,7 +419,7 @@ object IntelligentSMSApplicationWithNo extends TimeFuncs with Serializable {
             //  民航机场，开关机用户55(20190716先去掉，等hbase恢复) procedure_type流程类型编码（1：绑定   6：解绑）***特殊  有开关机的情况
             if (Set("1", "6").contains(procedure_type) && jichang.contains(lac_ci)) send(55)
             //            if (jichang.contains(lac_ci)) send(55)
-            //            呼伦贝尔，绰尔林业局56
+            //            呼伦贝尔，中国内蒙古森工集团绰尔森林工业有限公司56
             if (chuoerlinyeju.contains(lac_ci)) send(56)
             //            32107部队57
             if (budui32107Youqi.contains(lac_ci)) send(57)
