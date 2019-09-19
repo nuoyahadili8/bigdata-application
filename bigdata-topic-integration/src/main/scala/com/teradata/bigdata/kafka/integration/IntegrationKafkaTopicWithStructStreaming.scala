@@ -91,7 +91,8 @@ object IntegrationKafkaTopicWithStructStreaming extends TimeFuncs {
 
                   val phoneNoPartition = phoneNo.substring(phoneNo.length - 2, phoneNo.length) + phoneNo
                   val dataType = "S1-MME"
-                  val resLine = arr(1) + "," + arr(2) + "," + arr(3) + "," + arr(4) + "," + arr(5) + "," + arr(9) + "," + arr(10) + "," + phoneNo + "," + arr(12) + "," + arr(13) + "," + startTimeSSS + "," + startTime + "," + arr(14) + "," + arr(15) + "," + arr(16) + "," + arr(17) + "," + arr(19) + "," + arr(37) + "," + arr(38) + "," + arr(43) + "," + arr(44) + "," + arr(45) + "," + arr(46) + "," + dataType + "," + phoneNoPartition
+                  //            0 所在省	       1 所在地市	    2 归属省	       3 归属地市	    4 用户漫游类型	 5 用户IMSI	    6 终端IMEI	      7 用户号码	      8 流程类型编码	  9 业务流程开始时间Long	      10业务流程开始时间SSS	 11业务流程开始时间	 12业务流程结束时间	 13经度	         14纬度	         15位置信息来源	   16流程状态	     17终端用户的IPv4地址	 18终端用户的IPv6地址	 19TAC	         20小区标识	     21对端小区的TAC	 22对端小区的ECI	 23数据来源类型	    24手机号末尾2位+手机号11位（手机号分区）
+                  val resLine = arr(1) + "," + arr(2) + "," + arr(3) + "," + arr(4) + "," + arr(5) + "," + arr(9) + "," + arr(10) + "," + phoneNo + "," + arr(12) + "," + startTimeLong + "," +       startTimeSSS + "," + startTime + "," + arr(14) + "," +   arr(15) + "," + arr(16) + "," + arr(17) + "," + arr(19) + "," + arr(37) + "," +     arr(38) + "," +     arr(43) + "," + arr(44) + "," + arr(45) + "," + arr(46) + "," + dataType + "," + phoneNoPartition
                   resultList = resLine :: resultList
                 }
               }
@@ -125,7 +126,8 @@ object IntegrationKafkaTopicWithStructStreaming extends TimeFuncs {
                 val roam_type = arr(73)
                 val owner_province = arr(71)
                 val owner_city = arr(72)
-                val resLine = "" + "," + "" + "," + owner_province + "," + owner_city + "," + roam_type + "," + imsi + "," + imei + "," + phoneNo + "," + "" + "," + startTimeLong.toString + "," + startTimeSSS + "," + startTime + "," + endTime + "," + "" + "," + "" + "," + "" + "," + "" + "," + "" + "," + "" + "," + lac + "," + cell + "," + "" + "," + "" + "," + dataType + "," + phoneNoPartition
+                //            0 所在省	   1 所在地市	2 归属省	               3 归属地市	        4 用户漫游类型	    5 用户IMSI	   6 终端IMEI	  7 用户号码	      8 流程类型编码	  9 业务流程开始时间Long	      10业务流程开始时间SSS	 11业务流程开始时间	 12业务流程结束时间	 13经度	         14纬度	         15位置信息来源	   16流程状态	     17终端用户的IPv4地址	 18终端用户的IPv6地址	 19TAC	         20小区标识	     21对端小区的TAC	 22对端小区的ECI	 23数据来源类型	    24手机号末尾2位+手机号11位（手机号分区）
+                val resLine = "" + "," + "" + "," + owner_province + "," + owner_city + "," + roam_type + "," + imsi + "," + imei + "," + phoneNo + "," + "" + "," +      startTimeLong + "," +       startTimeSSS + "," + startTime + "," + endTime + "," +   "" + "," +      "" + "," +      "" + "," +      "" + "," +      "" + "," +          "" + "," +          lac + "," +     cell + "," +    "" + "," +      "" + "," +      dataType + "," + phoneNoPartition
                 resultList = resLine :: resultList
               }
             }
