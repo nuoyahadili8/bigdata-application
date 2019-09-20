@@ -156,6 +156,145 @@ trait YunmasFunc extends TimeFuncs with GbaseConnect with Serializable {
     phoneNo.substring(phoneNo.length - 2, phoneNo.length) + phoneNo
   }
 
+  def judgeConditionsAndSendTest(kafkaProducer: KafkaSink[String, String]
+                             , targetTopic: String
+                             , userCurrentInfo: ((String, Long), String, String, String, String, String, String, String)
+                             , actId: String
+                             , yunmasActInfo: YunmasActInfo
+                             , yunmasUserLastStatus: mutable.HashMap[String, (String, Long, Long)]
+                            ): Unit ={
+
+    val userPhoneNo = userCurrentInfo._2
+    val userLocalCity = userCurrentInfo._3
+    val userRoamType = userCurrentInfo._4
+    val userOwnerProvince = userCurrentInfo._5
+    val userOwnerCity = userCurrentInfo._6
+    val lac = userCurrentInfo._7
+    val ci = userCurrentInfo._8
+    val userLacCell = lac + "-" + ci
+    val userStartTime: String = userCurrentInfo._1._1
+    val userStartTimeLong: Long = userCurrentInfo._1._2
+
+
+    val stringLine = userStartTime + "|" +
+      userPhoneNo + "|" +
+      userLocalCity + "|" +
+      userRoamType + "|" +
+      userOwnerProvince + "|" +
+      userOwnerCity + "|" +
+      lac + "|" +
+      ci
+
+    var sendFlag = false
+
+    if (yunmasActInfo.stayDuration > 0) {
+      val isCondition = generalJudgeFunc(yunmasActInfo, userLocalCity, userLacCell, userRoamType)
+      if (isCondition){
+        if (yunmasUserLastStatus.contains(userPhoneNo)){
+          val lastStatus: (String, Long, Long) = yunmasUserLastStatus(userPhoneNo)
+          val lastEventType = lastStatus._1
+          //                    用户上批次驻留时间(秒)
+          val lastDuration = lastStatus._3
+          //                    用户上批次驻留开始时间(秒)
+          val lastStartTime = lastStatus._2
+          //                  startTimeLong(毫秒)/1000 -lastStartTime(秒)+lastDuration(秒)
+          val newDuration = userStartTimeLong / 1000 - lastStartTime + lastDuration
+          //                    当此用户驻留时间超过1个小时
+          if (newDuration >= yunmasActInfo.stayDuration) {
+            sendFlag = true
+          }
+          yunmasUserLastStatus.update(userPhoneNo, (lastEventType, userStartTimeLong / 1000, newDuration))
+        }else{
+          yunmasUserLastStatus.update(userPhoneNo, (actId, userStartTimeLong / 1000, 0))
+        }
+      }
+    }
+//    else {
+//      val isCondition = generalJudgeFunc(yunmasActInfo, userLocalCity, userLacCell, userRoamType)
+//      if (isCondition){
+//        sendFlag = generalJudgeFunc(yunmasActInfo, userLocalCity, userLacCell, userRoamType)
+//      }
+//    }
+
+    if (sendFlag) {
+      send(kafkaProducer, targetTopic, actId, stringLine)
+    }
+  }
+
+  /**
+    * 根据活动配置要求的位置信息和驻留时长判断是否发送信息
+    * @param kafkaProducer          kafka生产者
+    * @param targetTopic            发送目标topic
+    * @param userCurrentInfo        用户当前位置信息状态
+    * @param actId                  需求ID
+    * @param yunmasActInfo          从gbase获取活动配置 pview.vw_cloudmas_rule_to_td （活动要求用户当前所在城市、活动要求用户当前所在基站列表范围、要求的漫游类型、要求的驻留时长(秒)）
+    * @param yunmasUserLastStatus   从hbase取出用户的上批次最后状态
+    */
+  def judgeConditionsAndSendNew(kafkaProducer: KafkaSink[String, String]
+                                 , targetTopic: String
+                                 , userCurrentInfo: ((String, Long), String, String, String, String, String, String, String)
+                                 , actId: String
+                                 , yunmasActInfo: YunmasActInfo
+                                 , yunmasUserLastStatus: mutable.HashMap[String, (String, Long, Long)]
+                                ): Unit ={
+
+    val userPhoneNo = userCurrentInfo._2
+    val userLocalCity = userCurrentInfo._3
+    val userRoamType = userCurrentInfo._4
+    val userOwnerProvince = userCurrentInfo._5
+    val userOwnerCity = userCurrentInfo._6
+    val lac = userCurrentInfo._7
+    val ci = userCurrentInfo._8
+    val userLacCell = lac + "-" + ci
+    val userStartTime: String = userCurrentInfo._1._1
+    val userStartTimeLong: Long = userCurrentInfo._1._2
+
+
+    val stringLine = userStartTime + "|" +
+      userPhoneNo + "|" +
+      userLocalCity + "|" +
+      userRoamType + "|" +
+      userOwnerProvince + "|" +
+      userOwnerCity + "|" +
+      lac + "|" +
+      ci
+
+    var sendFlag = false
+
+    if (yunmasActInfo.stayDuration > 0) {
+      val isCondition = generalJudgeFunc(yunmasActInfo, userLocalCity, userLacCell, userRoamType)
+      if (isCondition){
+        if (yunmasUserLastStatus.contains(userPhoneNo)){
+          val lastStatus: (String, Long, Long) = yunmasUserLastStatus(userPhoneNo)
+          val lastEventType = lastStatus._1
+          //                    用户上批次驻留时间(秒)
+          val lastDuration = lastStatus._3
+          //                    用户上批次驻留开始时间(秒)
+          val lastStartTime = lastStatus._2
+          //                  startTimeLong(毫秒)/1000 -lastStartTime(秒)+lastDuration(秒)
+          val newDuration = userStartTimeLong / 1000 - lastStartTime + lastDuration
+          //                    当此用户驻留时间超过1个小时
+          if (newDuration >= yunmasActInfo.stayDuration) {
+            sendFlag = true
+          }
+          yunmasUserLastStatus.update(userPhoneNo, (lastEventType, userStartTimeLong / 1000, newDuration))
+        }else{
+          yunmasUserLastStatus.update(userPhoneNo, (actId, userStartTimeLong / 1000, 0))
+        }
+      }
+    }else {
+      val isCondition = generalJudgeFunc(yunmasActInfo, userLocalCity, userLacCell, userRoamType)
+      if (isCondition){
+        sendFlag = generalJudgeFunc(yunmasActInfo, userLocalCity, userLacCell, userRoamType)
+      }
+    }
+
+    if (sendFlag) {
+      send(kafkaProducer, targetTopic, actId, stringLine)
+    }
+  }
+
+
   /**
     * 根据活动配置要求的位置信息和驻留时长判断是否发送信息
     * @param kafkaProducer          kafka生产者
@@ -171,6 +310,8 @@ trait YunmasFunc extends TimeFuncs with GbaseConnect with Serializable {
                              , actId: String
                              , yunmasActInfo: YunmasActInfo
                              , yunmasUserLastStatus: mutable.HashMap[String, (String, Long, Long)]
+//                             , hbaseUtil: HbaseUtil
+//                             , connection: Connection
                             ): Unit = {
 
     val userPhoneNo = userCurrentInfo._2
@@ -203,7 +344,10 @@ trait YunmasFunc extends TimeFuncs with GbaseConnect with Serializable {
         , yunmasActInfo.stayDuration
         , userStartTimeLong
         , userPhoneNo
+        , actId
         , yunmasUserLastStatus
+//        , hbaseUtil
+//        , connection
       )
     } else {
       //      如果不判断驻留时长，判断完毕直接发送
@@ -264,7 +408,11 @@ trait YunmasFunc extends TimeFuncs with GbaseConnect with Serializable {
                             , stayDuration: Long
                             , userStartTimeLong: Long
                             , userPhoneNo: String
-                            , yunmasUserLastStatus: mutable.HashMap[String, (String, Long, Long)]): Boolean = {
+                            , actId: String
+                            , yunmasUserLastStatus: mutable.HashMap[String, (String, Long, Long)]
+//                            , hbaseUtil: HbaseUtil
+//                            , connection: Connection
+                           ): Boolean = {
     var sendFlag = false
     if (yunmasUserLastStatus.contains(userPhoneNo)) {
       val lastStatus: (String, Long, Long) = yunmasUserLastStatus(userPhoneNo)
@@ -282,8 +430,14 @@ trait YunmasFunc extends TimeFuncs with GbaseConnect with Serializable {
           sendFlag = true
         }
         yunmasUserLastStatus.update(userPhoneNo, (lastEventType, userStartTimeLong / 1000, newDuration))
+//        val an: List[(String, (String, Long, Long))] = yunmasUserLastStatus.toList
+//        hbaseUtil.putByKeyColumnList_MAS(connection,"b_yz_app_td_hbase:anliang",an)
       } else {
         yunmasUserLastStatus.update(userPhoneNo, ("X", userStartTimeLong / 1000, 0))
+      }
+    }else{
+      if (generalJudgeFunc) {
+        yunmasUserLastStatus.update(userPhoneNo, (actId, userStartTimeLong / 1000, 0))
       }
     }
     sendFlag
@@ -313,6 +467,10 @@ trait YunmasFunc extends TimeFuncs with GbaseConnect with Serializable {
     hbaseUtil.getResultByKeyList_MAS(conn, "b_yz_app_td_hbase:TourMasUserNew", partitionPhoneNos)
   }
 
+  def getYunmasUserLastStatusTest(hbaseUtil: HbaseUtil, conn: Connection, partitionPhoneNos: List[String]): mutable.HashMap[String, (String, Long, Long)] = {
+    hbaseUtil.getResultByKeyList_MAS(conn, "b_yz_app_td_hbase:anliang", partitionPhoneNos)
+  }
+
   /**
     * 更新新进入计时区域和驻留时长更新区域的用户，同时删除离开的用户
     * @param hun
@@ -325,5 +483,24 @@ trait YunmasFunc extends TimeFuncs with GbaseConnect with Serializable {
     // 删除hbase已经离开的用户
     val delResultList = yunmasUserLastStatus.filter(_._2._1.equals("X")).map(_._1).toList
     hbaseUtil.deleteRows(conn, "b_yz_app_td_hbase:TourMasUserNew", delResultList)
+  }
+
+  /**
+    * 更新新进入计时区域和驻留时长更新区域的用户，同时删除离开的用户
+    * @param hun
+    * @param conn
+    * @param yunmasUserLastStatus
+    */
+  def updateAndDeleteUserStatusNew(hbaseUtil: HbaseUtil, conn: Connection, yunmasUserLastStatus: mutable.Map[String, (String, Long, Long)]): Unit = {
+    val putResultList: List[(String, (String, Long, Long))] = yunmasUserLastStatus.filter(!_._2._1.equals("X")).toList
+    hbaseUtil.putByKeyColumnList_MAS(conn, "b_yz_app_td_hbase:TourMasUserNew", putResultList)
+    // 删除hbase已经离开的用户
+//    val delResultList = yunmasUserLastStatus.filter(_._2._1.equals("X")).map(_._1).toList
+//    hbaseUtil.deleteRows(conn, "b_yz_app_td_hbase:TourMasUserNew", delResultList)
+  }
+
+  def updateAndDeleteUserStatusTest(hbaseUtil: HbaseUtil, conn: Connection, yunmasUserLastStatus: mutable.Map[String, (String, Long, Long)]): Unit = {
+    val putResultList: List[(String, (String, Long, Long))] = yunmasUserLastStatus.filter(!_._2._1.equals("X")).toList
+    hbaseUtil.putByKeyColumnList_MAS(conn, "b_yz_app_td_hbase:anliang", putResultList)
   }
 }
