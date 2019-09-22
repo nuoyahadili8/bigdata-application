@@ -149,6 +149,12 @@
             <artifactId>hutool</artifactId>
             <version>${hutool-version}</version>
         </dependency>
+
+        <!--<dependency>-->
+            <!--<groupId>tv.cntt</groupId>-->
+            <!--<artifactId>chill-scala_2.11</artifactId>-->
+            <!--<version>1.2</version>-->
+        <!--</dependency>-->
     </dependencies>
 
 
