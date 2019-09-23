@@ -122,7 +122,7 @@ object IntelligentSMSApplicationAuto extends TimeFuncs with Serializable with Yu
         })
 
         //从hbase取出用户的最后状态：b_yz_app_td_hbase:TourMasUserNew
-        val yunmasUserLastStatus = getYunmasUserLastStatusTest(hbaseUtilBroadcastExecutor, hbaseConnection, partitionPhoneNos.toList)
+        val yunmasUserLastStatus = getYunmasUserLastStatus(hbaseUtilBroadcastExecutor, hbaseConnection, partitionPhoneNos.toList)
 
         userData
           .sortBy(_._2._1._2)  //按进入这个需求的时间排序
@@ -143,6 +143,11 @@ object IntelligentSMSApplicationAuto extends TimeFuncs with Serializable with Yu
               )
             })
         })
+        // 1.更新用户在hbase的驻留时长状态
+        // 2.删除已经离开需求区域的用户
+        updateAndDeleteUserStatus(hbaseUtilBroadcastExecutor, hbaseConnection, yunmasUserLastStatus)
+
+        if (hbaseConnection != null) hbaseConnection.close()
       })
     })
     ssc.start()

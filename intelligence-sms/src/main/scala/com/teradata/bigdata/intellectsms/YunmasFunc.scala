@@ -329,10 +329,6 @@ trait YunmasFunc extends TimeFuncs with GbaseConnect with Serializable {
     hbaseUtil.getResultByKeyList_MAS(conn, "b_yz_app_td_hbase:TourMasUserNew", partitionPhoneNos)
   }
 
-  def getYunmasUserLastStatusTest(hbaseUtil: HbaseUtil, conn: Connection, partitionPhoneNos: List[String]): mutable.HashMap[String, (String, Long, Long)] = {
-    hbaseUtil.getResultByKeyList_MAS(conn, "b_yz_app_td_hbase:anliang", partitionPhoneNos)
-  }
-
   /**
     * 更新新进入计时区域和驻留时长更新区域的用户，同时删除离开的用户
     * @param hun
@@ -347,36 +343,4 @@ trait YunmasFunc extends TimeFuncs with GbaseConnect with Serializable {
     hbaseUtil.deleteRows(conn, "b_yz_app_td_hbase:TourMasUserNew", delResultList)
   }
 
-  /**
-    * 更新新进入计时区域和驻留时长更新区域的用户，同时删除离开的用户
-    * @param hbaseUtil
-    * @param conn
-    * @param yunmasUserLastStatus
-    */
-  def updateAndDeleteUserStatusNew(hbaseUtil: HbaseUtil, conn: Connection, yunmasUserLastStatus: mutable.Map[String, (String, Long, Long)]): Unit = {
-    val putResultList: List[(String, (String, Long, Long))] = yunmasUserLastStatus.filter(!_._2._1.equals("X")).toList
-    hbaseUtil.putByKeyColumnList_MAS(conn, "b_yz_app_td_hbase:TourMasUserNew", putResultList)
-    // 删除hbase已经离开的用户
-    val delResultList = yunmasUserLastStatus.filter(_._2._1.equals("X")).map(_._1).toList
-    hbaseUtil.deleteRows(conn, "b_yz_app_td_hbase:TourMasUserNew", delResultList)
-  }
-
-  def updateAndDeleteUserStatusDuration(hbaseUtil: HbaseUtil, conn: Connection, yunmasUserLastStatus: mutable.Map[String, (String, Long, Long)]): Unit = {
-    val putResultList: List[(String, (String, Long, Long))] = yunmasUserLastStatus.filter(!_._2._1.equals("X")).toList
-    hbaseUtil.putByKeyColumnList_MAS(conn, "b_yz_app_td_hbase:TourMasUserNew", putResultList)
-    // 删除hbase已经离开的用户
-    val delResultList = yunmasUserLastStatus.filter(_._2._1.equals("X")).map(_._1).toList
-    hbaseUtil.deleteRows(conn, "b_yz_app_td_hbase:TourMasUserNew", delResultList)
-  }
-
-  def updateAndDeleteUserStatusTest(hbaseUtil: HbaseUtil, conn: Connection, yunmasUserLastStatus: mutable.Map[String, (String, Long, Long)]): Unit = {
-    val putResultList: List[(String, (String, Long, Long))] = yunmasUserLastStatus.filter(!_._2._1.equals("X")).toList
-
-    loggger.info("putResultList@put" + putResultList.size)
-    hbaseUtil.putByKeyColumnList_MAS(conn, "b_yz_app_td_hbase:anliang", putResultList)
-    // 删除hbase已经离开的用户
-    val delResultList = yunmasUserLastStatus.filter(_._2._1.equals("X")).map(_._1).toList
-    loggger.info("delResultList@put" + delResultList.size)
-    hbaseUtil.deleteRows(conn, "b_yz_app_td_hbase:anliang", delResultList)
-  }
 }
